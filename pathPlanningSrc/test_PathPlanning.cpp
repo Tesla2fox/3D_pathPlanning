@@ -1,4 +1,4 @@
-//#include "centralizedMRTA.h"
+﻿//#include "centralizedMRTA.h"
 //#include
 #include <iostream>
 #include "bgeometry.h"
@@ -30,7 +30,17 @@ void main()
 	
 	double gridSize = 5;
 	mainMap.setGridSize(5, 5);
-	mainMap.map2AGrid();
+	vector<double> _vRobCrossAbi;
+	
+	_vRobCrossAbi.push_back(1);
+	_vRobCrossAbi.push_back(2);
+	_vRobCrossAbi.push_back(3);
+	_vRobCrossAbi.push_back(4);
+	
+	mainMap.setCrossAbi(_vRobCrossAbi);
+	
+	mainMap.createMapGraph();
+	//mainMap.map2AGrid();
 
 	//mainMap.addObRing()
 

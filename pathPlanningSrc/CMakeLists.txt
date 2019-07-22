@@ -16,8 +16,8 @@ set(PP_file_list
 	#test_exe
 	${PROJECT_SOURCE_DIR}/pathPlanningSrc/test_PathPlanning.cpp
 	
-	${PROJECT_SOURCE_DIR}/pathPlanningSrc/Map3D.h
-	${PROJECT_SOURCE_DIR}/pathPlanningSrc/Map3D.cpp
+	${PROJECT_SOURCE_DIR}/pathPlanningSrc/planningMap.h
+	${PROJECT_SOURCE_DIR}/pathPlanningSrc/planningMap.cpp
 	${PROJECT_SOURCE_DIR}/pathPlanningSrc/APlan.h
 	${PROJECT_SOURCE_DIR}/pathPlanningSrc/APlan.cpp
 	
@@ -27,7 +27,7 @@ set(PP_file_list
 include_directories (${PROJECT_SOURCE_DIR}/bgeoSrc)	
 include_directories (${PROJECT_SOURCE_DIR}/taskAllocationSrc)
 include_directories(../include)
-find_package(Boost 1.65.0)
+find_package(Boost)
 
 if(Boost_FOUND)
 

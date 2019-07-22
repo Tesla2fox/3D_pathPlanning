@@ -79,23 +79,21 @@ namespace bgeo {
 
 
 	///*图库*/
-
     class VertexProperty { // 图节点中保存的信息
-    public:
-        unsigned int index;
-        //size_t        color;
-        bool EdgeState;
-        bool QueueState;
-        int Type;
-        bool NeighbourState;
-        bgeo::DPoint  pnt;
-        std::pair<size_t, size_t> PntIndex;
+	public:
+		VertexProperty();
+		VertexProperty(DPoint3D const &pnt, int const & type, std::pair<int, int> const & ind) :
+			_pnt(pnt), _type(type), _pntInd(ind)
+		{};
+        int _type;
+        bgeo::DPoint3D  _pnt;
+        std::pair<size_t, size_t> _pntInd;
     };
 
     class EdgeProperty {  // 图边中保存的信息
     public:
         unsigned int index;
-        float         weight;
+        float  weight;
         size_t dir;
     };
 
@@ -104,7 +102,8 @@ namespace bgeo {
     /// bidirectionalS	表示一个既有出边也有入边的有向图
     /// directedS	表示一个只能存取出边的有向图
     /// undirectedS	表示一个无向图
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexProperty, EdgeProperty> Graph;
+    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, VertexProperty, EdgeProperty> Graph;
+
 
     // 节点描述符
     typedef boost::graph_traits<Graph>::vertex_descriptor   VertexDescriptor;

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "stadfx.h"
 #include "bgeometry.h"
 
@@ -15,11 +15,9 @@ namespace pm {
 	public:
 		PointVert3D();
 		~PointVert3D();
-		bgeo::DPoint3D pnt;
-		int type;
-		std::pair<size_t, size_t> PntIndex;
-	private:
-
+		bgeo::DPoint3D _pnt;
+		int _type;
+		std::pair<size_t, size_t> _pntInd;
 	};
 
 	typedef std::map <std::pair<int, int>, PointVert3D> GridMap;
@@ -40,24 +38,35 @@ namespace pm {
 			this->_m_vCrossAbi = _v_crossAbi
 				;
 		}
-
+		
 		void addObRing(bgeo::DRing const& obring) { _m_vDRing.push_back(obring); }
 		void addObRing(std::vector<double> const& vx, std::vector<double> const& vy);
-		
-		void map2AGrid();
+
+		bool createMapGraph();
 		//void 
 
 	private:
 
-		//Ã¿Ò»¸öËÑË÷Õ¤¸ñµÄ¾àÀë
+
+		void map2AGrid();
+		void grid2Graph();
+
+
+		std::vector<GridIndex> getSearchNeighbor(GridIndex const &mindex);
+
+
+
+		//æ¯ä¸€ä¸ªæœç´¢æ …æ ¼çš„è·ç¦»
 		double gridStep = 2;
-		//Ã¿Ò»¸ö¼¯½áÕ¤¸ñµÄ¾àÀë
+		//æ¯ä¸€ä¸ªé›†ç»“æ …æ ¼çš„è·ç¦»
 		double AgridStep = 0.5;
 
 		
 		//
 		vector<double> _m_vCrossAbi;
-		
+		vector<bgeo::Graph> _m_vAllGraph;
+		vector<map<GridIndex, int>> _m_vAllMap2Graph;
+		vector<map<int, GridIndex>> _m_vAllGraph2Map;
 
 		bgeo::DPoint mWsPoint1;
 		bgeo::DPoint mWsPoint3;
@@ -67,18 +76,21 @@ namespace pm {
 		AllGridMap _m_a_allGridMap;
 
 
-		//×î´óĞĞ
+		//æœ€å¤§è¡Œ
 		size_t _m_maxRow;
-		//×î´óÁĞ
+		//æœ€å¤§åˆ—
 		size_t _m_maxCol;
 
 
 
-		//ÕÏ°­ÎïµÄĞÅÏ¢
+
+
+
+		//éšœç¢ç‰©çš„ä¿¡æ¯
 		std::vector<bgeo::DRing> _m_vDRing; 
 
 
-		// anyLogic ÊäÈëµÄÊı¾İ
+		// anyLogic è¾“å…¥çš„æ•°æ®
 		std::vector<double> _m_originData;
 		double _m_originGridSize;
 		size_t _m_originColSize;

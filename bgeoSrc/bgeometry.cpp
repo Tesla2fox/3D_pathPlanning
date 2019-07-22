@@ -48,17 +48,9 @@ namespace bgeo {
 		return false;
 	}
 
-    VertexProperty PointVert2PointVert(const PointVert & pnt_vert)
-    {
-        VertexProperty vertex_property;
-        vertex_property.PntIndex = pnt_vert.PntIndex;
-        vertex_property.Type = pnt_vert.type;
-        vertex_property.pnt = pnt_vert.pnt;
-        vertex_property.EdgeState = false;
-        return vertex_property;
-    }
-
-
+	VertexProperty::VertexProperty()
+	{
+	}
 }
 
 std::ostream & operator<<(std::ostream & out, bgeo::DPoint & pnt)

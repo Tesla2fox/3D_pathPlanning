@@ -1,4 +1,4 @@
-
+ï»¿
 #include "planningMap.h"
 
 
@@ -21,7 +21,7 @@ namespace pm {
 
 	void Map3D::setGridSize(double const& aSize, double const& sSize)
 	{
-		//Èç¹û²»ÄÜÕû³ýÔõÃ´°ì£¿
+		//å¦‚æžœä¸èƒ½æ•´é™¤æ€Žä¹ˆåŠžï¼Ÿ
 			this->AgridStep = aSize; 
 			this->gridStep = sSize;
 	}
@@ -63,10 +63,14 @@ namespace pm {
 		_m_vDRing.push_back(ringUnit);
 	}
 
+	bool Map3D::createMapGraph(){
+		this->map2AGrid();
+		this->grid2Graph();
+		return true;
+	}
+
 	void Map3D::map2AGrid()
 	{
-
-
 		auto bais_x = this->mWsPoint3.x() - this->mWsPoint1.x();
 		auto bais_y = this->mWsPoint3.y() - this->mWsPoint1.y();
 
@@ -102,15 +106,94 @@ namespace pm {
 				double _z = this->getHeight(pnt3D.get<Cartesian::X>(), pnt3D.get<Cartesian::Y>());
 				pnt3D.set<Cartesian::Z>(_z);
 				PointVert3D pntVert3d;
-				pntVert3d.pnt = pnt3D;
-				pntVert3d.type = pntType;
-				pntVert3d.PntIndex = GridIndex(i, j);
-				_m_AGridMap.insert(GridMapUnit(pntVert3d.PntIndex, pntVert3d));
-				
+				pntVert3d._pnt = pnt3D;
+				pntVert3d._type = pntType;
+				pntVert3d._pntInd = GridIndex(i, j);
+				_m_AGridMap.insert(GridMapUnit(pntVert3d._pntInd, pntVert3d));				
 			}
 		}
-		
+	}
 
+	void Map3D::grid2Graph(){
+	for (size_t i=0 ; i < this->_m_vCrossAbi.size(); i++)
+	{
+		auto &crossAbi = this->_m_vCrossAbi[i];
+		size_t graphInd = 0;
+		bgeo::Graph _graph;
+		map<GridIndex, int> map2graph;
+		map<int, GridIndex> graph2map;
+
+		for (auto & gridUnit : this->_m_AGridMap)
+		{
+			bgeo::VertexProperty _vertPro(gridUnit.second._pnt, gridUnit.second._type, gridUnit.first);
+			//_vertPro._pnt = it.second._pnt;
+			boost::add_vertex(_vertPro, _graph);
+			map2graph.insert(std::pair<GridIndex, int>(gridUnit.first, graphInd));
+			graph2map.insert(std::pair<int, GridIndex>(graphInd, gridUnit.first));
+			graphInd++;
+		}
+		this->_m_vAllMap2Graph.push_back(map2graph);
+		this->_m_vAllGraph2Map.push_back(graph2map);
+
+		std::pair<bgeo::VertexIterator, bgeo::VertexIterator> vi = boost::vertices(_graph);
+
+		for (bgeo::VertexIterator vit = vi.first; vit != vi.second; vit++)
+		{
+			bgeo::VertexDescriptor vd = *vit;
+			if (_graph[vd]._type == VertType::WayVert)
+			{
+				auto localIndex = graph2map[vd];
+				auto vlocalIndex = getSearchNeighbor(localIndex);
+				vector<bgeo::VertexDescriptor> vvd;
+				for (auto &it : vlocalIndex)
+					vvd.push_back(map2graph[it]);
+				
+				double m_z = _graph[vd]._pnt.get<Cartesian::Z>();
+
+				for(auto & e_vd : vvd)
+				{ 
+					auto &vp = _graph[e_vd];
+					auto _z = vp._pnt.get<Cartesian::Z>();
+					if (_z >= (m_z + crossAbi))
+						continue;
+					bgeo::EdgeProperty ep;
+					ep.weight = bg::distance(_graph[vd]._pnt, _graph[e_vd]._pnt);
+					boost::add_edge(vd, e_vd, ep, _graph);
+				}
+			}
+		}
+
+		auto num_edges = boost::num_edges(_graph);
+		cout << "num_edges = " << num_edges << endl;
+		this->_m_vAllGraph.push_back(_graph);
+	}
+	}
+
+	std::vector<GridIndex> Map3D::getSearchNeighbor(GridIndex const & mindex)
+	{
+
+		//
+		auto &grid = this->_m_AGridMap;
+		std::vector<GridIndex> vIndex;
+		
+		for (auto i = mindex.first - 1; i <= (mindex.first + 1); i++)
+		{
+			for (auto j = mindex.second - 1; j <= (mindex.second + 1); j++)
+			{
+				if (grid.count(GridIndex(i, j)) == 1)
+				{
+					if ((i == mindex.first) && (j == mindex.second))
+					{
+					}
+					else
+					{
+						if (grid[GridIndex(i, j)]._type == VertType::WayVert)
+							vIndex.push_back(GridIndex(i, j));
+					}
+				}
+			}
+		}
+		return vIndex;
 	}
 
 	double Map3D::getHeight(double const& x, double const& y) const
