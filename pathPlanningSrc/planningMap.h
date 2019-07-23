@@ -44,6 +44,7 @@ namespace pm {
 
 		bool createMapGraph();
 		//void 
+		bgeo::Graph& getGraph(size_t const& ind) { return this->_m_vAllGraph[ind];}
 
 	private:
 

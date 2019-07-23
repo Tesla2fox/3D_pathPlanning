@@ -8,6 +8,11 @@
 #include "planningMap.h"
 #include "stadfx.h"
 
+#include "boost/graph/astar_search.hpp"
+#include "boost/graph/random.hpp"
+
+#include <random>
+
 void main()
 {
 
@@ -40,6 +45,17 @@ void main()
 	mainMap.setCrossAbi(_vRobCrossAbi);
 	
 	mainMap.createMapGraph();
+
+
+	auto &graph = mainMap.getGraph(0);
+
+	std::mt19937 gen;
+
+	auto start = boost::random_vertex(graph, gen);
+	auto goal = boost::random_vertex(graph, gen);
+
+	boost::astar_search(graph,start, boost::astar_heuristic<bgeo::Graph,double>()
+	)
 	//mainMap.map2AGrid();
 
 	//mainMap.addObRing()

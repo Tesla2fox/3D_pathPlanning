@@ -38,6 +38,7 @@ message(${Boost_INCLUDE_DIRS})
 endif()
 
 add_executable(test_pathPlanning ${PP_file_list})
+add_executable(test_boostAstar testAstar.cpp)
 
 if (UNIX)
     target_compile_options(pathplan PRIVATE -std=c++11)
