@@ -19,5 +19,6 @@ message("PROJECT_SOURCE_DIR" ${PROJECT_SOURCE_DIR})
 #add_subdirectory(taskAllocationSrc)
 #GGQ和鲁赛的路径规划
 add_subdirectory(pathPlanningSrc)
+add_subdirectory(jSrc)
 #生成anylogic的dll
 #add_subdirectory(anyLogicLibSrc)

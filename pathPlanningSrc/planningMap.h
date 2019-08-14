@@ -33,7 +33,7 @@ namespace pm {
 
 		void setGridRange(double const& min_x, double const min_y, double const& max_x, double const& max_y);
 		void setGridSize(double const& aSize, double const& sSize);
-		bool getOriginData(vector<double> const& _data, double const& _originGridSize, size_t const& _originColSize);
+		bool setOriginData(vector<double> const& _data, double const& _originGridSize, size_t const& _originColSize);
 		void setCrossAbi(vector<double> const& _v_crossAbi) {
 			this->_m_vCrossAbi = _v_crossAbi
 				;
@@ -130,6 +130,6 @@ namespace pm {
 	private:
 
 	};
-
+	extern Map3D ex_mainMap;
 }
 
