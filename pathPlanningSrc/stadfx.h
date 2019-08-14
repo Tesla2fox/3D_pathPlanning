@@ -35,6 +35,8 @@ using std::map;
 using std::set;
 using std::pair;
 using std::queue;
+using std::floor;
+using std::ceil;
 
 #define conDir "D:\\py_code\\ComplexSystemIntelligentControl\\data\\"
 //#define conDir "D:\\pyCode\\ComplexSystemIntelligentControl\\data\\est\\"

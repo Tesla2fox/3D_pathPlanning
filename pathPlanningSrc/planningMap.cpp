@@ -196,9 +196,15 @@ namespace pm {
 		return vIndex;
 	}
 
-	double Map3D::getHeight(double const& x, double const& y) const
+	double Map3D::getHeight(double const& _x, double const& _y) const
 	{
-		return 0.0;
+		auto const bias_x = _x - this->mWsPoint1.x();
+		auto const bias_y = _y - this->mWsPoint1.y();
+		
+		size_t const row = std::floor(bias_y / this->_m_originGridSize);
+		size_t const col = std::floor(bias_x / this->_m_originGridSize);
+		//cout << " row  = " << row << " col = " << col << endl;
+		return this->_m_originData[row * this->_m_originColSize + col ];
 	}
 
 

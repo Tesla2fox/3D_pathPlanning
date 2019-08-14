@@ -39,7 +39,9 @@ endif()
 
 add_executable(test_pathPlanning ${PP_file_list})
 add_executable(test_boostAstar testAstar.cpp)
+add_executable(test_astarMaze astar_maze.cpp)
 
+add_executable(test_grid grid_graph_example.cpp)
 if (UNIX)
     target_compile_options(pathplan PRIVATE -std=c++11)
     target_compile_options(test_pathplan PRIVATE -std=c++11)

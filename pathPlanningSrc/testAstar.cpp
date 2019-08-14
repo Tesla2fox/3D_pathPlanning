@@ -1,4 +1,4 @@
-
+﻿
 
 //
 //=======================================================================
@@ -16,6 +16,7 @@
 #include <boost/graph/random.hpp>
 #include <boost/random.hpp>
 #include <boost/graph/graphviz.hpp>
+
 //#include <sys/time.h>
 #include <time.h>
 #include <vector>
@@ -114,12 +115,11 @@ int main(int argc, char **argv)
 {
   
   // specify some types
-  typedef adjacency_list<listS, vecS, bidirectionalS, no_property,
+  typedef adjacency_list<listS, vecS, undirectedS, no_property,
     property<edge_weight_t, cost> > mygraph_t;
   typedef property_map<mygraph_t, edge_weight_t>::type WeightMap;
   typedef mygraph_t::vertex_descriptor vertex;
   typedef mygraph_t::edge_descriptor edge_descriptor;
-  typedef mygraph_t::vertex_iterator vertex_iterator;
   typedef std::pair<int, int> edge;
   
   // specify data
@@ -165,14 +165,14 @@ int main(int argc, char **argv)
   WeightMap weightmap = get(edge_weight, g);
   for(std::size_t j = 0; j < num_edges; ++j) {
     edge_descriptor e; bool inserted;
-    tie(e, inserted) = add_edge(edge_array[j].first,
-                                edge_array[j].second, g);
+    boost::tie(e, inserted) = add_edge(edge_array[j].first,
+                                       edge_array[j].second, g);
     weightmap[e] = weights[j];
   }
   
   
   // pick random start/goal
-  mt19937 gen(time(0));
+  boost::mt19937 gen(time(0));
   vertex start = random_vertex(g, gen);
   vertex goal = random_vertex(g, gen);
   
@@ -193,11 +193,12 @@ int main(int argc, char **argv)
   vector<cost> d(num_vertices(g));
   try {
     // call astar named parameter interface
-    astar_search
+    astar_search_tree
       (g, start,
        distance_heuristic<mygraph_t, cost, location*>
         (locations, goal),
-       predecessor_map(&p[0]).distance_map(&d[0]).
+       predecessor_map(make_iterator_property_map(p.begin(), get(vertex_index, g))).
+       distance_map(make_iterator_property_map(d.begin(), get(vertex_index, g))).
        visitor(astar_goal_visitor<vertex>(goal)));
   
   
@@ -216,7 +217,8 @@ int main(int argc, char **argv)
       cout << " -> " << name[*spi];
     cout << endl << "Total travel time: " << d[goal] << endl;
     return 0;
-  }  
+  }
+  
   cout << "Didn't find a path from " << name[start] << "to"
        << name[goal] << "!" << endl;
   return 0;
