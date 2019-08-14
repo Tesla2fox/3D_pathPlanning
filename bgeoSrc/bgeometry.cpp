@@ -12,10 +12,10 @@ namespace bgeo {
 	PointVert::~PointVert()
 	{
 	}
-	
 
 
-	DLineString v2LineString(std::vector<double> &vx, std::vector<double> &vy)
+
+	DLineString v2LineString(std::vector<double>& vx, std::vector<double>& vy)
 	{
 		DLineString dline;
 		for (size_t i = 0; i < vx.size(); i++)
@@ -25,7 +25,7 @@ namespace bgeo {
 		return dline;
 	}
 	//首尾需要相互连接
-	DRing v2Ring(std::vector<double> const &vx, std::vector<double> const &vy)
+	DRing v2Ring(std::vector<double> const& vx, std::vector<double> const& vy)
 	{
 		DRing ring;
 		for (size_t i = 0; i < vx.size(); i++)
@@ -36,11 +36,11 @@ namespace bgeo {
 	}
 
 
-	bool DPointEqual(DPoint const &a, DPoint const &b)
+	bool DPointEqual(DPoint const& a, DPoint const& b)
 	{
-		if (a.x()==b.x())
-        {
-			if (a.y()==b.y())
+		if (a.x() == b.x())
+		{
+			if (a.y() == b.y())
 			{
 				return true;
 			}
@@ -48,19 +48,27 @@ namespace bgeo {
 		return false;
 	}
 
+	bool pointEqual(DPoint3D const& a, DPoint3D const& b)
+	{
+		if (a.get<0>() == b.get<0>() && a.get<1>() == b.get<1>() && a.get<2>() == b.get<2>())
+			return true;
+		else
+			return false;
+	}
+
 	VertexProperty::VertexProperty()
 	{
 	}
 }
 
-std::ostream & operator<<(std::ostream & out, bgeo::DPoint & pnt)
+std::ostream& operator<<(std::ostream& out, bgeo::DPoint& pnt)
 {
 	// TODO: 在此处插入 return 语句
-		out << "x = " << pnt.x() << " y = " << pnt.y() << std::endl;
-		return out;
+	out << "x = " << pnt.x() << " y = " << pnt.y() << std::endl;
+	return out;
 }
 
-std::ostream & operator<<(std::ostream & out, bgeo::DRing & ring)
+std::ostream& operator<<(std::ostream& out, bgeo::DRing& ring)
 {
 	// TODO: 在此处插入 return 语句
 	for (size_t i = 0; i < ring.size(); i++)

@@ -38,13 +38,33 @@ namespace pm {
 			this->_m_vCrossAbi = _v_crossAbi
 				;
 		}
-		
+
 		void addObRing(bgeo::DRing const& obring) { _m_vDRing.push_back(obring); }
 		void addObRing(std::vector<double> const& vx, std::vector<double> const& vy);
 
 		bool createMapGraph();
 		//void 
-		bgeo::Graph& getGraph(size_t const& ind) { return this->_m_vAllGraph[ind];}
+		bgeo::Graph& getGraph(size_t const& ind) { return this->_m_vAllGraph[ind]; }
+		GridMap& getGridMap() { return this->_m_AGridMap; }
+	
+
+		/// debug function 
+		bool empty(int const& t);
+
+
+		// for planning function 
+		GridIndex pnt2Index(bgeo::DPoint const& pnt, size_t const& _type);
+				
+		double getGridSize(size_t const& _type) const {
+			if (_type == MapType::AggregationMap)
+				return this->AgridStep;
+			else
+				return this->SgridStep;
+		};
+		double getCrossAbi(size_t const& ind) const
+		{
+			return this->_m_vCrossAbi[ind];
+		}
 
 	private:
 
@@ -55,10 +75,8 @@ namespace pm {
 
 		std::vector<GridIndex> getSearchNeighbor(GridIndex const &mindex);
 
-
-
 		//每一个搜索栅格的距离
-		double gridStep = 2;
+		double SgridStep = 2;
 		//每一个集结栅格的距离
 		double AgridStep = 0.5;
 
@@ -77,14 +95,17 @@ namespace pm {
 		AllGridMap _m_a_allGridMap;
 
 
-		//最大行
-		size_t _m_maxRow;
-		//最大列
-		size_t _m_maxCol;
+		//Amap 最大行
+		size_t _m_a_maxRow;
+		//Amap 最大列
+		size_t _m_a_maxCol;
 
 
 
-
+		//Amap 最大行
+		size_t _m_s_maxRow;
+		//Amap 最大列
+		size_t _m_s_maxCol;
 
 
 		//障碍物的信息

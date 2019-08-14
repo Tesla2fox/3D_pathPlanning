@@ -61,6 +61,7 @@ namespace bgeo {
 
 	bool DPointEqual(DPoint const &a, DPoint const &b);
 
+	bool pointEqual(DPoint3D const& a, DPoint3D const& b);
 
 	enum   vertType { ObVert, WayVert,EdgeObVert,ShoulderVert,NearVert };
 	class PointVert

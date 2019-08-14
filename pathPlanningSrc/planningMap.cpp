@@ -23,7 +23,7 @@ namespace pm {
 	{
 		//如果不能整除怎么办？
 			this->AgridStep = aSize; 
-			this->gridStep = sSize;
+			this->SgridStep = sSize;
 	}
 
 	bool Map3D::getOriginData(vector<double> const& _data, double const& _originGridSize, size_t const& _originColSize)
@@ -69,21 +69,76 @@ namespace pm {
 		return true;
 	}
 
+	bool Map3D::empty(int const& t)
+	{
+		return false;
+	}
+
+	GridIndex Map3D::pnt2Index(bgeo::DPoint const& pnt, size_t const& _type)
+	{
+		GridIndex rindex;
+		rindex.first = -1;
+		rindex.second = -1;
+
+		double _i_x = this->mWsPoint1.x();
+		double _i_y = this->mWsPoint1.y();
+		if (pnt.y() < _i_y)
+			return rindex;
+		if (pnt.x() < _i_x)
+			return rindex;
+		auto bais_x = pnt.x() - _i_x;
+		auto bais_y = pnt.y() - _i_y;
+		double step;
+
+		if (_type == MapType::AggregationMap)
+			step = this->AgridStep;
+		else
+			step = this->SgridStep;
+
+		auto p_col = floor(bais_x / step);
+		auto p_row = floor(bais_y / step);
+		if (_type == MapType::AggregationMap)
+		{
+			if (p_col > this->_m_a_maxCol)
+			{
+				return rindex;
+			}
+			if (p_row > this->_m_a_maxRow)
+			{
+				return rindex;
+			}
+		}
+		else
+		{
+			if (p_col > this->_m_s_maxCol)
+			{
+				return rindex;
+			}
+			if (p_row > this->_m_s_maxRow)
+			{
+				return rindex;
+			}
+		}
+		rindex.first = p_col;
+		rindex.second = p_row;
+		return rindex;
+	}
+
 	void Map3D::map2AGrid()
 	{
 		auto bais_x = this->mWsPoint3.x() - this->mWsPoint1.x();
 		auto bais_y = this->mWsPoint3.y() - this->mWsPoint1.y();
 
 		//the max col and the max row
-		this->_m_maxRow = ceil(bais_x / this->gridStep);
-		this->_m_maxCol = ceil(bais_y / this->gridStep);
+		this->_m_a_maxRow = ceil(bais_x / this->AgridStep);
+		this->_m_a_maxCol = ceil(bais_y / this->AgridStep);
 
 		//car1
-		for (size_t i = 0; i < _m_maxCol; i++)
+		for (size_t i = 0; i < _m_a_maxCol; i++)
 		{
 			bgeo::DPoint3D pnt3D;
 			pnt3D.set<Cartesian::X>(this->AgridStep * i + this->mWsPoint1.x() + this->AgridStep / 2);
-			for (size_t j = 0; j < _m_maxRow; j++)
+			for (size_t j = 0; j < _m_a_maxRow; j++)
 			{
 				pnt3D.set<Cartesian::Y>(this->AgridStep * j + this->mWsPoint1.y() + this->AgridStep / 2);
 				size_t pntType = VertType::WayVert;
