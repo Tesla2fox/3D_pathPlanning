@@ -51,6 +51,8 @@ namespace pl {
 		bool setStartPnt(double const& x, double const& y, double const& z);
 		bool setTargetPnt(double const& x, double const& y, double const& z);
 
+		bool setStartAndTargetPnt(double const& s_x, double const& s_y, double const& t_x, double const& t_y);
+
 		void setAgentType(size_t const& _type) { _m_agentType = _type; }
 
 
@@ -65,8 +67,8 @@ namespace pl {
 		bool start2Grid();
 		bool AstarPlan();
 
-
-
+		vector<bgeo::DPoint3D> get3DPath() const { return this->m_path3D; }
+		vector<bgeo::DPoint> get2DPath() const { return this->m_path2D; }
 
 		pm::Map3D _m_map;
 		pm::GridMap _m_AGridMap;
@@ -82,7 +84,8 @@ namespace pl {
 		pm::GridIndex m_Sindex;
 
 
-		vector<bgeo::DPoint3D> m_path;
+		vector<bgeo::DPoint3D> m_path3D;
+		vector<bgeo::DPoint> m_path2D;
 		double gridSize;
 
 		std::list<ANode> m_openList;

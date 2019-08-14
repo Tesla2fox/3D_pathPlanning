@@ -26,7 +26,7 @@ namespace pm {
 			this->SgridStep = sSize;
 	}
 
-	bool Map3D::getOriginData(vector<double> const& _data, double const& _originGridSize, size_t const& _originColSize)
+	bool Map3D::setOriginData(vector<double> const& _data, double const& _originGridSize, size_t const& _originColSize)
 	{
 		this->_m_originData = _data;
 		this->_m_originGridSize = _originGridSize;
@@ -271,5 +271,5 @@ namespace pm {
 	PointVert3D::~PointVert3D()
 	{
 	}
-
+	Map3D ex_mainMap;
 }

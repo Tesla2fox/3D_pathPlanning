@@ -1,24 +1,14 @@
-﻿//#include "centralizedMRTA.h"
-//#include
-#include <iostream>
+﻿#include <iostream>
 #include "bgeometry.h"
-//#include "centralizedMRTA.h"
-
-
 #include "planningMap.h"
 #include "stadfx.h"
-
 #include "boost/graph/astar_search.hpp"
 #include "boost/graph/random.hpp"
-
 #include <random>
-
 #include "aplan.h"
 
-
 void main()
-{
-	
+{	
 	double test_data[10] = { 1, 2, 3, 4, -1, 6, 7, 8, 9 };
 	vector<double> _data;
 	for (size_t i = 0; i < 9; i++)
@@ -33,7 +23,7 @@ void main()
 
 	pm::Map3D mainMap;
 
-	mainMap.getOriginData(_data, test_data_gridSize, test_data_colNum);
+	mainMap.setOriginData(_data, test_data_gridSize, test_data_colNum);
 	
 	double gridSize = 5;
 	mainMap.setGridSize(5, 5);
@@ -91,8 +81,6 @@ void main()
 	//{
 	//	std::cout << "area" << taskAllocationRes[i] << std::endl;
 	//}
-
-
 
 	int i;
 	std::cin >> i;

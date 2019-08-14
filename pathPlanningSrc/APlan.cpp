@@ -58,7 +58,7 @@ namespace pl {
 		this->m_startPnt3D.set<Cartesian::X>(x);
 		this->m_startPnt3D.set<Cartesian::Y>(y);
 		this->m_startPnt3D.set<Cartesian::Z>(z);
-		this->setStartPnt(x, y);
+		//this->setStartPnt(x, y);
 		return false;
 	}
 	bool APlan::setTargetPnt(double const& x, double const& y, double const& z)
@@ -66,8 +66,25 @@ namespace pl {
 		this->m_targetPnt3D.set<Cartesian::X>(x);
 		this->m_targetPnt3D.set<Cartesian::Y>(y);
 		this->m_targetPnt3D.set<Cartesian::Z>(z);
-		this->setTargetPnt(x, y);
+		//this->setTargetPnt(x, y);
 		return false;
+	}
+
+	bool APlan::setStartAndTargetPnt(double const& s_x, double const& s_y, double const& t_x, double const& t_y)
+	{
+		setStartPnt(s_x, s_y);
+		setTargetPnt(t_x, t_y);
+		if (target2Grid() && start2Grid())
+		{
+			this->setStartPnt(this->_m_AGridMap[this->m_Sindex]._pnt.get<Cartesian::X>(),
+				this->_m_AGridMap[this->m_Sindex]._pnt.get<Cartesian::Y>(),
+				this->_m_AGridMap[this->m_Sindex]._pnt.get<Cartesian::Z>());
+			this->setTargetPnt(this->_m_AGridMap[this->m_Tindex]._pnt.get<Cartesian::X>(),
+				this->_m_AGridMap[this->m_Tindex]._pnt.get<Cartesian::Y>(),
+				this->_m_AGridMap[this->m_Tindex]._pnt.get<Cartesian::Z>());
+		}
+		else
+			return false;
 	}
 
 	bool APlan::loadMap(pm::Map3D& _map)
@@ -124,6 +141,7 @@ namespace pl {
 		this->m_closeSet.clear();
 		this->m_closeVect.clear();
 
+		//此处验证没有必要
 		if ((target2Grid()) && (start2Grid()))
 		{
 			std::cout << "spnt.x = " << this->m_startPnt.x() << "	spnt.y = " << this->m_startPnt.y();
@@ -240,6 +258,8 @@ namespace pl {
 
 	bool APlan::AstarPathFinder()
 	{
+		m_path3D.clear();
+		m_path2D.clear();
 		std::stack<bgeo::DPoint3D> sDPoint;
 		std::stack<int> sDirIndex;
 		auto u_node = m_closeList[m_Tindex];
@@ -285,9 +305,12 @@ namespace pl {
 		for (size_t i = 1; i < (vdirIndex.size() - 1); i++)
 		{
 			if (vdirIndex.at(i) != vdirIndex.at(i + 1))
-				m_path.push_back(vpathTem.at(i));
+				m_path3D.push_back(vpathTem.at(i));
 		}
-		m_path.push_back(vpathTem.back());
+		m_path3D.push_back(vpathTem.back());
+		for (auto& it : this->m_path3D)
+			this->m_path2D.push_back(bgeo::DPoint(it.get<Cartesian::X>(), it.get<Cartesian::Y>()));
+		
 		return true;
 	}
 
@@ -358,12 +381,6 @@ namespace pl {
 	{
 		return boost::geometry::distance(this->m_targetPnt3D, a_node._pnt);
 	}
-
-
-
-
-
-
 
 	double calDisHInPnt(bgeo::DPoint3D const& pnt, bgeo::DPoint3D const& _target)
 	{
