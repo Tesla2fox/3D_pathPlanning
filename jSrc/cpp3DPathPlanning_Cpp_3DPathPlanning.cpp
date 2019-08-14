@@ -24,6 +24,23 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MapUpdate
 	return 2;
 }
 
+JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_mapSetOb
+(JNIEnv* env, jclass, jdoubleArray jx, jdoubleArray jy)
+{
+	jdouble* jdouble_xptr = env->GetDoubleArrayElements(jx, NULL);
+	int len_x = env->GetArrayLength(jx);
+
+	jdouble* jdouble_yptr = env->GetDoubleArrayElements(jy, NULL);
+	int len_y = env->GetArrayLength(jy);
+	vector<double> vx, vy;
+	for (size_t i = 0; i < len_x; i++)
+	{
+		vx.push_back(jdouble_xptr[i]);
+		vy.push_back(jdouble_yptr[i]);
+	}
+	pm::ex_mainMap.addObRing(vx, vy);
+	return -1;
+}
 
 JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_setRobAbi
 (JNIEnv*env , jclass, jdoubleArray jAbi)
@@ -39,8 +56,6 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_setRobAbi
 	pm::ex_mainMap.createMapGraph();
 	return 1;
 }
-
-
 
 JNIEXPORT jdoubleArray JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MotionPlanning
 (JNIEnv* env, jclass, jdouble start_x, jdouble start_y, jdouble target_x, jdouble target_y, jint robType)

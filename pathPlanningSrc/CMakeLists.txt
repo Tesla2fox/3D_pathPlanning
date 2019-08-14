@@ -16,8 +16,11 @@ set(PP_file_list
 	${PROJECT_SOURCE_DIR}/pathPlanningSrc/planningMap.h
 	${PROJECT_SOURCE_DIR}/pathPlanningSrc/planningMap.cpp
 	${PROJECT_SOURCE_DIR}/pathPlanningSrc/APlan.h
-	${PROJECT_SOURCE_DIR}/pathPlanningSrc/APlan.cpp
-	
+	${PROJECT_SOURCE_DIR}/pathPlanningSrc/APlan.cpp	
+
+	${PROJECT_SOURCE_DIR}/pathPlanningSrc/SPlan.h
+	${PROJECT_SOURCE_DIR}/pathPlanningSrc/SPlan.cpp	
+
 	)
 	
 
@@ -35,10 +38,13 @@ message(${Boost_INCLUDE_DIRS})
 endif()
 
 add_executable(test_pathPlanning ${PP_file_list})
-add_executable(test_boostAstar testAstar.cpp)
-add_executable(test_astarMaze astar_maze.cpp)
 
-add_executable(test_grid grid_graph_example.cpp)
+
+#add_executable(test_boostAstar testAstar.cpp)
+#add_executable(test_astarMaze astar_maze.cpp)
+#add_executable(test_grid grid_graph_example.cpp)
+
+
 if (UNIX)
     target_compile_options(pathplan PRIVATE -std=c++11)
     target_compile_options(test_pathplan PRIVATE -std=c++11)

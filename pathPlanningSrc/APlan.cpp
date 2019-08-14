@@ -10,7 +10,8 @@ namespace pl {
 		this->disF = a.disF;
 		this->disG = a.disG;
 		this->disH = a.disH;
-		this->parent = a.parent;
+		//this->parent = a.parent;
+		this->_parentInd = a._parentInd;
 		this->_pnt = a._pnt;			
 		this->_dir = a._dir;
 		this->_pntInd = a._pntInd;

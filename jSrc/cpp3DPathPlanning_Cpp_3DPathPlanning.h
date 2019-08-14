@@ -17,6 +17,14 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MapUpdate
 
 /*
  * Class:     cpp3DPathPlanning_Cpp_3DPathPlanning
+ * Method:    mapSetOb
+ * Signature: ([D[D)I
+ */
+JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_mapSetOb
+  (JNIEnv *, jclass, jdoubleArray, jdoubleArray);
+
+/*
+ * Class:     cpp3DPathPlanning_Cpp_3DPathPlanning
  * Method:    setRobAbi
  * Signature: ([D)I
  */

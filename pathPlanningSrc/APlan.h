@@ -31,7 +31,7 @@ namespace pl {
 		double disH = 0;
 		double disG = 0;
 		double disF = 0;
-		GridIndex parent;
+		//GridIndex parent;
 	private:
 
 	};
@@ -102,8 +102,6 @@ namespace pl {
 
 		// max search time
 		size_t _m_maxSearhTimes = 20000;
-
-
 
 		void SortedAddToOpenList(ANode const& mNode);
 		std::vector<GridIndex> getNeighbor(GridIndex const& mindex, std::vector<size_t>& vdirIndex);
