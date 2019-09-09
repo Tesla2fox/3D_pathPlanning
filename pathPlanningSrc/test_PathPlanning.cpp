@@ -6,37 +6,78 @@
 #include "boost/graph/random.hpp"
 #include <random>
 #include "aplan.h"
+#include "ssconfig.hpp"
+
 
 void main()
-{	
-	double test_data[10] = { 1, 2, 3, 4, -1, 6, 7, 8, 9 };
-	vector<double> _data;
-	for (size_t i = 0; i < 9; i++)
-	{
-		cout << " ," << test_data[i] << endl;
-		_data.push_back(test_data[i]);
-	}
-
-	double test_data_gridSize = 30;
-	double test_data_colNum = 3;
-
-
+{
 	pm::Map3D mainMap;
 
-	mainMap.setOriginData(_data, test_data_gridSize, test_data_colNum);
-	
-	double gridSize = 5;
-	mainMap.setGridSize(5, 5);
+	char* fileName = "D:\\VScode\\3D_pathPlanning\\debugMsg\\xx_h_debug.txt";
+	sscfg::ConfigFile co_list = sscfg::ConfigFile::load(fileName);
+	vector<double> _data;
+
+	double _jGridSize = 1;
+	size_t _jColNum;
+
+	co_list.get("_data", _data);
+	co_list.get("_jGridSize", _jGridSize);
+	co_list.get("_jColNum", _jColNum);
+
+	mainMap.setOriginData(_data, _jGridSize, _jColNum);
+
+
+	double _aGridSize = 1;
+	double _sGridSize = 1;
+	co_list.get("_aGridSize", _aGridSize);
+	co_list.get("_sGridSize", _sGridSize);
+
+	mainMap.setGridSize(_aGridSize, _sGridSize);
+
+
+	char* fileName2 = "D:\\VScode\\3D_pathPlanning\\debugMsg\\xx_ob_debug.txt";
+	sscfg::ConfigFile co_list2 = sscfg::ConfigFile::load(fileName2);
 	vector<double> _vRobCrossAbi;
+
+	size_t _obRingNum;
+	co_list2.get("_vRobCrossAbi", _vRobCrossAbi);	
+	mainMap.setCrossAbi(_vRobCrossAbi);
+
+	co_list2.get("_obRingNum", _obRingNum);
 	
+	for (size_t i = 0; i < _obRingNum; i++)
+	{
+		std::string name_x = "vx";
+		std::string name_y = "vy";
+		name_x += std::to_string(i);
+		name_y += std::to_string(i);
+		vector<double> vx, vy;
+		co_list2.get(name_x, vx);
+		co_list2.get(name_x, vy);
+		mainMap.addObRing(vx, vy);
+	}
+	mainMap.createMapGraph();
+
+
+
+
+	//for (size_t i = 0; i < 9; i++)
+	//{
+	//	cout << " ," << test_data[i] << endl;
+	//	_data.push_back(test_data[i]);
+	//}
+	//mainMap.setOriginData(_data, _jGridSize, _jColNum);
+	
+
+
+
+
 	_vRobCrossAbi.push_back(1);
 	_vRobCrossAbi.push_back(2);
 	_vRobCrossAbi.push_back(3);
 	_vRobCrossAbi.push_back(4);
 	
-	mainMap.setCrossAbi(_vRobCrossAbi);
 	
-	mainMap.createMapGraph();
 
 	auto &graph = mainMap.getGraph(0);
 

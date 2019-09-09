@@ -2,9 +2,11 @@
 #include "planningMap.h"
 #include "APlan.h"
 #include <time.h>
+#include "Gwrite.hpp"
 
-bool DebugBoolean = true;
+//bool DebugBoolean = true;
 
+#define  DebugBoolean true
 
 JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MapUpdate
 (JNIEnv* env, jclass, jdoubleArray jHeight, jdouble jGridSize, jint jColNum, jdouble aGridSize, jdouble sGridSize)
@@ -16,15 +18,19 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MapUpdate
 	int len_h = env->GetArrayLength(jHeight);
 	vector<double> _data;
 
-
+	if (DebugBoolean)
+	{
+		conf_debug << "_data" ;
+	}
 	for (size_t i = 0; i < len_h; i++)
 	{
 		_data.push_back(jdouble_hPtr[i]);
 		if (DebugBoolean)
 		{
-			conf_debug << jdouble_hPtr[i] << " ";
+			conf_debug << _data.at(i) << " ";
 		}
 	}
+
 	double _jGridSize = jGridSize;
 	int _jColNum = jColNum;
 	pm::ex_mainMap.setOriginData(_data, _jGridSize, _jColNum);
@@ -38,10 +44,10 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MapUpdate
 	if (DebugBoolean)
 	{
 		conf_debug << endl;
-		conf_debug << "double _jGridSize = " << _jGridSize << ";" << endl;
-		conf_debug << "double _jColNum = " << _jColNum << ";" << endl;
-		conf_debug << "double _aGridSize = " << _aGridSize << ";" << endl;
-		conf_debug << "double _sGridSize = " << _sGridSize << ";" << endl;
+		conf_debug << "_jGridSize  " << _jGridSize  << endl;
+		conf_debug << "_jColNum " << _jColNum << endl;
+		conf_debug << "_aGridSize " << _aGridSize << endl;
+		conf_debug << "_sGridSize " << _sGridSize << endl;
 	}
 	conf_debug.close();
 
@@ -66,7 +72,6 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_mapSetOb
 		vy.push_back(jdouble_yptr[i]);
 	}
 
-
 	pm::ex_mainMap.addObRing(vx, vy);
 	return -1;
 }
@@ -84,26 +89,45 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_setRobAbi
 
 
 
+	if (DebugBoolean)
+	{
+		conf_debug << "	_vRobCrossAbi ";
+	}
 	vector<double> _vRobCrossAbi;
 	for (size_t i = 0; i < len_rob; i++)
 	{
 		_vRobCrossAbi.push_back(jdouble_abiPtr[i]);
 		if (DebugBoolean)
 		{
-			conf_debug << " " << jdouble_abiPtr[i] << endl;
+			conf_debug << jdouble_abiPtr[i] << " " ;
 		}
+	}
+	if (DebugBoolean)
+	{
 	}
 	pm::ex_mainMap.setCrossAbi(_vRobCrossAbi);
 	if (DebugBoolean)
 	{
+		conf_debug << endl;
+
 		auto &v_obRing = pm::ex_mainMap.getObstacleRing();
+		conf_debug << "_obRingNum " << v_obRing.size()<< endl;
+		size_t i = 0;
 		for (auto &obring : v_obRing)
 		{
+			vector<double> vx, vy;
 			for (auto &pnt : obring)
 			{
-				conf_debug << "x = " << pnt.x() << "y = " << pnt.y() << endl;
+				vx.push_back(pnt.x());
+				vy.push_back(pnt.y());
 			}
-			conf_debug << "obRing " << endl;
+			std::string name_x = "vx";
+			std::string name_y = "vy";
+			name_x += std::to_string(i);
+			name_y += std::to_string(i);
+			writeDebug(conf_debug, name_x, vx);
+			writeDebug(conf_debug, name_y, vy);
+			i++;
 		}
 	}
 	conf_debug.close();
@@ -114,6 +138,10 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_setRobAbi
 JNIEXPORT jdoubleArray JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MotionPlanning
 (JNIEnv* env, jclass, jdouble start_x, jdouble start_y, jdouble target_x, jdouble target_y, jint robType)
 {
+
+	std::ofstream conf_debug("xx_plan_debug.txt", std::ios::trunc);
+	conf_debug.precision(12);
+
 	std::clock_t startTime, endTime;
 	int _robType = robType;
 	double _start_x = start_x;
@@ -125,12 +153,22 @@ JNIEXPORT jdoubleArray JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_Motion
 
 	aplan.loadMap(pm::ex_mainMap);
 	aplan.setStartAndTargetPnt(_start_x, _start_y, _target_x, _target_y);
-	
+
+
 	std::clock_t a_startTime, a_endTime;
 	a_startTime = clock();
 	aplan.AstarPlan();
 	a_endTime = clock();
 	cout << "cPlan the planning Time is  " << (double)(a_endTime - a_startTime) / CLOCKS_PER_SEC << "s" << endl;
+
+	if (DebugBoolean)
+	{
+		conf_debug << "_start_x " << _start_x << " _start_y " << _start_y << endl;
+		conf_debug << "_target_x " << _target_x << " _target_y " << _target_y << endl;
+		conf_debug << " cPlan Planning Time is " << (double)(a_endTime - a_startTime) / CLOCKS_PER_SEC << endl;
+		conf_debug.close();
+	}
+
 
 
 	auto _path = aplan.get2DPath();

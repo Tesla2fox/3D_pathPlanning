@@ -28,6 +28,7 @@ set(PP_file_list
 include_directories (${PROJECT_SOURCE_DIR}/bgeoSrc)	
 include_directories (${PROJECT_SOURCE_DIR}/taskAllocationSrc)
 include_directories (${PROJECT_SOURCE_DIR}/pathPlanningSrc)
+include_directories (${PROJECT_SOURCE_DIR}/ioSrc)
 include_directories(../include)
 find_package(Boost)
 

@@ -262,12 +262,9 @@ namespace pm {
 		return this->_m_originData[row * this->_m_originColSize + col ];
 	}
 
-
-
 	PointVert3D::PointVert3D()
 	{
 	}
-
 	PointVert3D::~PointVert3D()
 	{
 	}
