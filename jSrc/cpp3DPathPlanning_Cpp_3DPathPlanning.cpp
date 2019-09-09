@@ -1,6 +1,7 @@
-#include "cpp3DPathPlanning_Cpp_3DPathPlanning.h"
+﻿#include "cpp3DPathPlanning_Cpp_3DPathPlanning.h"
 #include "planningMap.h"
 #include "APlan.h"
+#include <time.h>
 
 
 JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MapUpdate
@@ -60,16 +61,24 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_setRobAbi
 JNIEXPORT jdoubleArray JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MotionPlanning
 (JNIEnv* env, jclass, jdouble start_x, jdouble start_y, jdouble target_x, jdouble target_y, jint robType)
 {
+	std::clock_t startTime, endTime;
 	int _robType = robType;
 	double _start_x = start_x;
 	double _start_y = start_y;
 	double _target_x = target_x;
 	double _target_y = target_y;
 	pl::APlan aplan;
+	startTime = clock();
+
 	aplan.loadMap(pm::ex_mainMap);
 	aplan.setStartAndTargetPnt(_start_x, _start_y, _target_x, _target_y);
 	aplan.AstarPlan();
-	auto _path = aplan.get2DPath();	
+	auto _path = aplan.get2DPath();
+
+	endTime = clock();
+
+	cout << " total Time " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
+
 	jdoubleArray output = env->NewDoubleArray(_path.size() * 2 + 1);
 	jboolean isCopy2 = JNI_FALSE;
 	jdouble* destArrayElems = env->GetDoubleArrayElements(output, &isCopy2);
