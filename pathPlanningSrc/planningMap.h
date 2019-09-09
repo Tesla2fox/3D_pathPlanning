@@ -46,7 +46,7 @@ namespace pm {
 		//void 
 		bgeo::Graph& getGraph(size_t const& ind) { return this->_m_vAllGraph[ind]; }
 		GridMap& getGridMap() { return this->_m_AGridMap; }
-	
+		std::vector<bgeo::DRing> getObstacleRing() { return this->_m_vDRing; }
 
 		/// debug function 
 		bool empty(int const& t);

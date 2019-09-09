@@ -3,23 +3,48 @@
 #include "APlan.h"
 #include <time.h>
 
+bool DebugBoolean = true;
+
 
 JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MapUpdate
 (JNIEnv* env, jclass, jdoubleArray jHeight, jdouble jGridSize, jint jColNum, jdouble aGridSize, jdouble sGridSize)
 {
+
+	std::ofstream conf_debug("xx_h_debug.txt", std::ios::trunc);
+	conf_debug.precision(12);
 	jdouble* jdouble_hPtr = env->GetDoubleArrayElements(jHeight, NULL);
 	int len_h = env->GetArrayLength(jHeight);
 	vector<double> _data;
+
+
 	for (size_t i = 0; i < len_h; i++)
+	{
 		_data.push_back(jdouble_hPtr[i]);
-	
+		if (DebugBoolean)
+		{
+			conf_debug << jdouble_hPtr[i] << " ";
+		}
+	}
 	double _jGridSize = jGridSize;
 	int _jColNum = jColNum;
 	pm::ex_mainMap.setOriginData(_data, _jGridSize, _jColNum);
 
+
+	
 	double _aGridSize = aGridSize;
 	double _sGridSize = sGridSize;
+
 	pm::ex_mainMap.setGridSize(_aGridSize, _sGridSize);
+	if (DebugBoolean)
+	{
+		conf_debug << endl;
+		conf_debug << "double _jGridSize = " << _jGridSize << ";" << endl;
+		conf_debug << "double _jColNum = " << _jColNum << ";" << endl;
+		conf_debug << "double _aGridSize = " << _aGridSize << ";" << endl;
+		conf_debug << "double _sGridSize = " << _sGridSize << ";" << endl;
+	}
+	conf_debug.close();
+
 	//jdouble* jdouble_xptr = env->GetDoubleArrayElements(jx, NULL);	
 	//int len_x = env->GetArrayLength(jx);
 	return 2;
@@ -28,6 +53,7 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MapUpdate
 JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_mapSetOb
 (JNIEnv* env, jclass, jdoubleArray jx, jdoubleArray jy)
 {
+
 	jdouble* jdouble_xptr = env->GetDoubleArrayElements(jx, NULL);
 	int len_x = env->GetArrayLength(jx);
 
@@ -39,21 +65,48 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_mapSetOb
 		vx.push_back(jdouble_xptr[i]);
 		vy.push_back(jdouble_yptr[i]);
 	}
+
+
 	pm::ex_mainMap.addObRing(vx, vy);
 	return -1;
 }
 
 JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_setRobAbi
-(JNIEnv*env , jclass, jdoubleArray jAbi)
+(JNIEnv*env, jclass, jdoubleArray jAbi)
 {
 
 	jdouble* jdouble_abiPtr = env->GetDoubleArrayElements(jAbi, NULL);
 	int len_rob = env->GetArrayLength(jAbi);
 
+
+	std::ofstream conf_debug("xx_ob_debug.txt", std::ios::trunc);
+	conf_debug.precision(12);
+
+
+
 	vector<double> _vRobCrossAbi;
 	for (size_t i = 0; i < len_rob; i++)
+	{
 		_vRobCrossAbi.push_back(jdouble_abiPtr[i]);
+		if (DebugBoolean)
+		{
+			conf_debug << " " << jdouble_abiPtr[i] << endl;
+		}
+	}
 	pm::ex_mainMap.setCrossAbi(_vRobCrossAbi);
+	if (DebugBoolean)
+	{
+		auto &v_obRing = pm::ex_mainMap.getObstacleRing();
+		for (auto &obring : v_obRing)
+		{
+			for (auto &pnt : obring)
+			{
+				conf_debug << "x = " << pnt.x() << "y = " << pnt.y() << endl;
+			}
+			conf_debug << "obRing " << endl;
+		}
+	}
+	conf_debug.close();
 	pm::ex_mainMap.createMapGraph();
 	return 1;
 }
@@ -72,12 +125,19 @@ JNIEXPORT jdoubleArray JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_Motion
 
 	aplan.loadMap(pm::ex_mainMap);
 	aplan.setStartAndTargetPnt(_start_x, _start_y, _target_x, _target_y);
+	
+	std::clock_t a_startTime, a_endTime;
+	a_startTime = clock();
 	aplan.AstarPlan();
+	a_endTime = clock();
+	cout << "cPlan the planning Time is  " << (double)(a_endTime - a_startTime) / CLOCKS_PER_SEC << "s" << endl;
+
+
 	auto _path = aplan.get2DPath();
 
 	endTime = clock();
 
-	cout << " total Time " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
+	cout << "cPlan total Time " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
 
 	jdoubleArray output = env->NewDoubleArray(_path.size() * 2 + 1);
 	jboolean isCopy2 = JNI_FALSE;

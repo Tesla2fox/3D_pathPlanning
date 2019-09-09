@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 #include "stadfx.h"
@@ -101,7 +101,7 @@ namespace pl {
 		double _m_crossAbi;
 
 		// max search time
-		size_t _m_maxSearhTimes = 20000;
+		size_t _m_maxSearhTimes = 200000;
 
 		void SortedAddToOpenList(ANode const& mNode);
 		std::vector<GridIndex> getNeighbor(GridIndex const& mindex, std::vector<size_t>& vdirIndex);

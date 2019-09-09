@@ -1,4 +1,5 @@
-#include "APlan.h"
+﻿#include "APlan.h"
+
 
 
 namespace pl {
@@ -39,6 +40,7 @@ namespace pl {
 	{
 
 	}
+
 	APlan::~APlan()
 	{
 	}
@@ -83,6 +85,7 @@ namespace pl {
 			this->setTargetPnt(this->_m_AGridMap[this->m_Tindex]._pnt.get<Cartesian::X>(),
 				this->_m_AGridMap[this->m_Tindex]._pnt.get<Cartesian::Y>(),
 				this->_m_AGridMap[this->m_Tindex]._pnt.get<Cartesian::Z>());
+			return true;
 		}
 		else
 			return false;
@@ -96,6 +99,7 @@ namespace pl {
 		this->gridSize = _map.getGridSize(MapType::AggregationMap);
 		this->_m_crossAbi = _map.getCrossAbi(this->_m_agentType);
 
+		this->setMaxSearchTimes(this->gridSize);
 		return false;
 	}
 
@@ -118,7 +122,7 @@ namespace pl {
 	}
 	bool APlan::start2Grid()
 	{
-		this->m_Sindex = this->_m_map.pnt2Index(this->m_targetPnt, pm::MapType::AggregationMap);
+		this->m_Sindex = this->_m_map.pnt2Index(this->m_startPnt, pm::MapType::AggregationMap);
 		if ((m_Sindex.first == -1) && (m_Sindex.second == -1))
 			//Target is in the obstacle
 		{
@@ -142,21 +146,33 @@ namespace pl {
 		this->m_closeSet.clear();
 		this->m_closeVect.clear();
 
-		//�˴���֤û�б�Ҫ
+		//此处验证没有必要
 		if ((target2Grid()) && (start2Grid()))
 		{
-			std::cout << "spnt.x = " << this->m_startPnt.x() << "	spnt.y = " << this->m_startPnt.y();
+			std::cout << "spnt.x = " << this->m_startPnt.x() << "	spnt.y = " << this->m_startPnt.y() << endl;
 			std::cout << "sgrid.x = " << this->_m_AGridMap[m_Sindex]._pnt.get<Cartesian::X>() <<
-				" sgrid.y = " << this->_m_AGridMap[m_Sindex]._pnt.get<Cartesian::Y>();
+				" sgrid.y = " << this->_m_AGridMap[m_Sindex]._pnt.get<Cartesian::Y>() << endl;
 
-			std::cout << "tpnt.x = " << this->m_targetPnt.x() << "	tpnt.y = " << this->m_targetPnt.y();
+			std::cout << "tpnt.x = " << this->m_targetPnt.x() << "	tpnt.y = " << this->m_targetPnt.y() << endl;
 			std::cout << "tgrid.x = " << this->_m_AGridMap[m_Tindex]._pnt.get<Cartesian::X>() <<
-				" tgrid.y = " << this->_m_AGridMap[m_Tindex]._pnt.get<Cartesian::Y>();
+				" tgrid.y = " << this->_m_AGridMap[m_Tindex]._pnt.get<Cartesian::Y>() << endl;
 
+			clock_t aSearch_startTime, aSearch_endTime;
+			aSearch_startTime = clock();
 			if (AstarSearch())
 			{
+				aSearch_endTime = clock();
+				cout << "aSearchTime  = " << (double)(aSearch_endTime - aSearch_startTime) / CLOCKS_PER_SEC
+					<< endl;
+				clock_t aFind_startTime, aFind_endTime;
+				aFind_startTime = clock();
 				if (AstarPathFinder())
+				{
+					aFind_endTime = clock();
+					cout << "aFindTime  = " << (double)(aFind_endTime - aFind_startTime) / CLOCKS_PER_SEC
+						<< endl;					
 					return true;
+				}
 				else
 				{
 					this->failIndex = -4;
@@ -171,7 +187,6 @@ namespace pl {
 
 		return false;
 	}
-
 	bool APlan::AstarSearch()
 	{
 		auto& grid = this->_m_AGridMap;
