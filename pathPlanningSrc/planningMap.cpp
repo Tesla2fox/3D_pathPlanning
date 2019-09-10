@@ -124,6 +124,30 @@ namespace pm {
 		return rindex;
 	}
 
+	bool Map3D::writeGrid(std::string fileName)
+	{
+		std::ofstream conf_debug(fileName, std::ios::trunc);
+		conf_debug.precision(12);
+		conf_debug << "maxCol " << this->_m_a_maxCol << endl;
+		conf_debug << "maxRow " << this->_m_a_maxRow << endl;
+		
+	
+		vector<double> vx, vy, vz;
+		vector<int> _data;
+		for (size_t i = 0; i < this->_m_a_maxRow; i++)
+		{
+			for (size_t j = 0; j < this->_m_a_maxCol; j++)
+			{
+				vx.push_back(this->_m_AGridMap[GridIndex(i, j)]._pnt.get<Cartesian::X>());
+				vy.push_back(this->_m_AGridMap[GridIndex(i, j)]._pnt.get<Cartesian::Y>());
+				vz.push_back(this->_m_AGridMap[GridIndex(i, j)]._pnt.get<Cartesian::Z>());
+			}
+		}
+		
+		//conf_debug<<""
+		return false;
+	}
+
 	void Map3D::map2AGrid()
 	{
 		auto bais_x = this->mWsPoint3.x() - this->mWsPoint1.x();

@@ -70,24 +70,34 @@ void main()
 	
 
 
-
-
-	_vRobCrossAbi.push_back(1);
-	_vRobCrossAbi.push_back(2);
-	_vRobCrossAbi.push_back(3);
-	_vRobCrossAbi.push_back(4);
+	double _start_x = 1;
+	double _start_y = 1;
+	double _target_x = 500;
+	double _target_y = 500;
+	pl::APlan a_plan;
+	a_plan.loadMap(mainMap);
+	a_plan.setStartAndTargetPnt(_start_x, _start_y, _target_x, _target_y);
 	
-	
-
-	auto &graph = mainMap.getGraph(0);
-
-	std::mt19937 gen;
-
-	auto start = boost::random_vertex(graph, gen);
-	auto goal = boost::random_vertex(graph, gen);
+	std::clock_t a_startTime, a_endTime;
+	a_startTime = clock();
+	a_plan.AstarPlan();
+	a_endTime = clock();
+	cout << "cPlan the planning Time is  " << (double)(a_endTime - a_startTime) / CLOCKS_PER_SEC << "s" << endl;
 
 
-		
+	//_vRobCrossAbi.push_back(1);
+	//_vRobCrossAbi.push_back(2);
+	//_vRobCrossAbi.push_back(3);
+	//_vRobCrossAbi.push_back(4);
+	//
+	//
+
+	//auto &graph = mainMap.getGraph(0);
+
+	//std::mt19937 gen;
+
+	//auto start = boost::random_vertex(graph, gen);
+	//auto goal = boost::random_vertex(graph, gen);
 
 	//boost::astar_search(graph,start, boost::astar_heuristic<bgeo::Graph,double>())
 	//mainMap.map2AGrid();

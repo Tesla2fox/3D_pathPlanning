@@ -196,7 +196,6 @@ namespace pl {
 		m_openSet.push_back(m_Sindex);
 		m_openList.push_back(sNode);
 
-
 		size_t searchTimes = 0;
 
 		while (!m_openList.empty())
@@ -205,7 +204,6 @@ namespace pl {
 			auto aIndex = m_openList.front()._pntInd;
 			auto preDir = m_openList.front()._dir;
 			double currDis = m_openList.front().disG;
-
 
 			// Move the first item of openList to closedList
 			m_closeVect.push_back(m_openList.front());
@@ -402,5 +400,7 @@ namespace pl {
 	{
 			return boost::geometry::distance(pnt, _target);
 	}
+
+
 
 }

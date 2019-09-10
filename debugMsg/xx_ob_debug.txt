@@ -1,4 +1,4 @@
-	_vRobCrossAbi 4 1 
+_vRobCrossAbi 4 1 
 _obRingNum 4
 vx0 45 95 95 45 45
 vy0 265 265 325 325 265

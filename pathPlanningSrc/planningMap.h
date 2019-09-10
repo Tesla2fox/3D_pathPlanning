@@ -66,6 +66,7 @@ namespace pm {
 			return this->_m_vCrossAbi[ind];
 		}
 
+		bool writeGrid(std::string fileName);
 	private:
 
 
