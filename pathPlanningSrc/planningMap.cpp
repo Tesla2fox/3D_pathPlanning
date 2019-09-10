@@ -1,6 +1,7 @@
 ﻿
 #include "planningMap.h"
-
+#include "Gwrite.hpp"
+#include "simple_svg.hpp"
 
 
 namespace pm {
@@ -45,8 +46,6 @@ namespace pm {
 			//cout << "row = " << row << endl;
 			_m_vOriginData[row].push_back(_data[i]);
 		}
-
-
 
 		// set range
 		this->mWsPoint1.set<0>(0);
@@ -128,10 +127,11 @@ namespace pm {
 	{
 		std::ofstream conf_debug(fileName, std::ios::trunc);
 		conf_debug.precision(12);
-		conf_debug << "maxCol " << this->_m_a_maxCol << endl;
 		conf_debug << "maxRow " << this->_m_a_maxRow << endl;
-		
-	
+		conf_debug << "maxCol " << this->_m_a_maxCol << endl;
+
+		vector<size_t> vRow, vCol;
+		vector<size_t> vObRow, vObCol;
 		vector<double> vx, vy, vz;
 		vector<int> _data;
 		for (size_t i = 0; i < this->_m_a_maxRow; i++)
@@ -141,10 +141,66 @@ namespace pm {
 				vx.push_back(this->_m_AGridMap[GridIndex(i, j)]._pnt.get<Cartesian::X>());
 				vy.push_back(this->_m_AGridMap[GridIndex(i, j)]._pnt.get<Cartesian::Y>());
 				vz.push_back(this->_m_AGridMap[GridIndex(i, j)]._pnt.get<Cartesian::Z>());
+				vRow.push_back(i);
+				vCol.push_back(j);
+				if (this->_m_AGridMap[GridIndex(i, j)]._type == VertType::Obstacle)
+				{
+					vObRow.push_back(i);
+					vObCol.push_back(j);
+				}
 			}
 		}
-		
-		//conf_debug<<""
+		writeDebug(conf_debug, "row", vRow);
+		writeDebug(conf_debug, "col", vCol);
+		writeDebug(conf_debug, "obRow", vObRow);
+		writeDebug(conf_debug, "obCol", vObCol);
+		writeDebug(conf_debug, "x", vx);
+		writeDebug(conf_debug, "y", vy);
+		writeDebug(conf_debug, "y", vy);
+
+		auto& v_obRing = this->getObstacleRing();
+		conf_debug << "_obRingNum " << v_obRing.size() << endl;
+		size_t i = 0;
+		for (auto& obring : v_obRing)
+		{
+			vector<double> vx, vy;
+			for (auto& pnt : obring)
+			{
+				vx.push_back(pnt.x());
+				vy.push_back(pnt.y());
+			}
+			std::string name_x = "ob_x";
+			std::string name_y = "ob_y";
+			name_x += std::to_string(i);
+			name_y += std::to_string(i);
+			writeDebug(conf_debug, name_x, vx);
+			writeDebug(conf_debug, name_y, vy);
+			i++;
+		}
+		return false;
+	}
+
+	bool Map3D::savePic()
+	{
+		//svg::Dimensions dimensions(10 * this->_m_a_maxRow, 10 * this->_m_a_maxCol);
+		//svg::Document doc("AMap.svg", svg::Layout(dimensions, svg::Layout::BottomLeft));
+		//for (auto& it : this->_m_AGridMap)
+		//{
+		//	double px = it.second._pnt.get<Cartesian::X>();
+		//	double py = it.second._pnt.get<Cartesian::Y>();
+		//	svg::Point pnt(px, py);
+		//	if (it.second._type == Obstacle)
+		//	{
+		//		doc << svg::Circle(pnt, 3, svg::Color::Blue);
+		//	}
+		//	else
+		//	{
+
+		//	}
+
+
+		//}
+		//auto InitVp = this->ATgrid.at(ob::gridIndex(0, 0));
 		return false;
 	}
 

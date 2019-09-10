@@ -9,6 +9,9 @@
 #include "ssconfig.hpp"
 
 
+
+#define _DEBUGMSG 1
+
 void main()
 {
 	pm::Map3D mainMap;
@@ -53,23 +56,15 @@ void main()
 		name_y += std::to_string(i);
 		vector<double> vx, vy;
 		co_list2.get(name_x, vx);
-		co_list2.get(name_x, vy);
+		co_list2.get(name_y, vy);
 		mainMap.addObRing(vx, vy);
 	}
 	mainMap.createMapGraph();
 
-
-
-
-	//for (size_t i = 0; i < 9; i++)
-	//{
-	//	cout << " ," << test_data[i] << endl;
-	//	_data.push_back(test_data[i]);
-	//}
-	//mainMap.setOriginData(_data, _jGridSize, _jColNum);
+#ifdef _DEBUGMSG
+	mainMap.writeGrid("D:\\VScode\\3D_pathPlanning\\debugMsg\\grid.dat");
+#endif // DEBUGMSG
 	
-
-
 	double _start_x = 1;
 	double _start_y = 1;
 	double _target_x = 500;

@@ -67,6 +67,7 @@ namespace pm {
 		}
 
 		bool writeGrid(std::string fileName);
+		bool savePic();
 	private:
 
 
