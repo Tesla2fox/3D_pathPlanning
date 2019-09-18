@@ -17,6 +17,9 @@ set(PP_file_list
 	${PROJECT_SOURCE_DIR}/pathPlanningSrc/APlan.cpp
 	
 	
+	${PROJECT_SOURCE_DIR}/pathPlanningSrc/SPlan.h
+	${PROJECT_SOURCE_DIR}/pathPlanningSrc/SPlan.cpp	
+
 	#
 	${PROJECT_SOURCE_DIR}/jSrc/cpp3DPathPlanning_Cpp_3DPathPlanning.h
 	${PROJECT_SOURCE_DIR}/jSrc/cpp3DPathPlanning_Cpp_3DPathPlanning.cpp

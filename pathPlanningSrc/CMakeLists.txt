@@ -19,8 +19,8 @@ set(PP_file_list
 	${PROJECT_SOURCE_DIR}/pathPlanningSrc/APlan.cpp	
 	${PROJECT_SOURCE_DIR}/pathPlanningSrc/simple_svg.hpp
 
-	${PROJECT_SOURCE_DIR}/pathPlanningSrc/SPlan.h
-	${PROJECT_SOURCE_DIR}/pathPlanningSrc/SPlan.cpp	
+	${PROJECT_SOURCE_DIR}/pathPlanningSrc/splan.h
+	${PROJECT_SOURCE_DIR}/pathPlanningSrc/splan.cpp	
 
 	)
 	

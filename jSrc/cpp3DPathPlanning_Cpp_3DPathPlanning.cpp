@@ -20,7 +20,7 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MapUpdate
 
 	if (DebugBoolean)
 	{
-		conf_debug << "_data" ;
+		conf_debug << "_data " ;
 	}
 	for (size_t i = 0; i < len_h; i++)
 	{
@@ -91,7 +91,7 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_setRobAbi
 
 	if (DebugBoolean)
 	{
-		conf_debug << "	_vRobCrossAbi ";
+		conf_debug << "_vRobCrossAbi ";
 	}
 	vector<double> _vRobCrossAbi;
 	for (size_t i = 0; i < len_rob; i++)
@@ -150,7 +150,7 @@ JNIEXPORT jdoubleArray JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_Motion
 	double _target_y = target_y;
 	pl::APlan aplan;
 	startTime = clock();
-
+	aplan.setAgentType(robType);
 	aplan.loadMap(pm::ex_mainMap);
 	aplan.setStartAndTargetPnt(_start_x, _start_y, _target_x, _target_y);
 
@@ -163,8 +163,11 @@ JNIEXPORT jdoubleArray JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_Motion
 
 	if (DebugBoolean)
 	{
-		conf_debug << "_start_x " << _start_x << " _start_y " << _start_y << endl;
-		conf_debug << "_target_x " << _target_x << " _target_y " << _target_y << endl;
+		conf_debug << "_start_x " << _start_x << endl;
+		conf_debug << " _start_y " << _start_y << endl;
+		conf_debug << "_target_x " << _target_x << endl;
+		conf_debug <<" _target_y " << _target_y << endl;
+		conf_debug << "_robType " << _robType << endl;
 		conf_debug << " cPlan Planning Time is " << (double)(a_endTime - a_startTime) / CLOCKS_PER_SEC << endl;
 		conf_debug.close();
 	}

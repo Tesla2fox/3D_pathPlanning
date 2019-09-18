@@ -45,7 +45,9 @@ namespace pm {
 		bool createMapGraph();
 		//void 
 		bgeo::Graph& getGraph(size_t const& ind) { return this->_m_vAllGraph[ind]; }
-		GridMap& getGridMap() { return this->_m_AGridMap; }
+		GridMap& getAGridMap() { return this->_m_AGridMap; }
+		GridMap& getSGridMap() { return this->_m_SGridMap; }
+
 		std::vector<bgeo::DRing> getObstacleRing() { return this->_m_vDRing; }
 
 		/// debug function 
@@ -72,17 +74,17 @@ namespace pm {
 
 
 		void map2AGrid();
-		void grid2Graph();
+		void grid2AGraph();
 
+		void map2SGrid();
+		void grid2SGraph();
 
 		std::vector<GridIndex> getSearchNeighbor(GridIndex const &mindex);
 
 		//每一个搜索栅格的距离
 		double SgridStep = 2;
 		//每一个集结栅格的距离
-		double AgridStep = 0.5;
-
-		
+		double AgridStep = 0.5;		
 		//
 		vector<double> _m_vCrossAbi;
 		vector<bgeo::Graph> _m_vAllGraph;
@@ -94,6 +96,7 @@ namespace pm {
 
 
 		GridMap _m_AGridMap;
+		GridMap _m_SGridMap;
 		AllGridMap _m_a_allGridMap;
 
 
@@ -102,17 +105,12 @@ namespace pm {
 		//Amap 最大列
 		size_t _m_a_maxCol;
 
-
-
 		//Amap 最大行
 		size_t _m_s_maxRow;
 		//Amap 最大列
 		size_t _m_s_maxCol;
-
-
 		//障碍物的信息
 		std::vector<bgeo::DRing> _m_vDRing; 
-
 
 		// anyLogic 输入的数据
 		std::vector<double> _m_originData;

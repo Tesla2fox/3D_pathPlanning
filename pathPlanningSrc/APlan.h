@@ -61,7 +61,7 @@ namespace pl {
 
 		int failIndex = 1;
 		void setMaxSearchTimes(const size_t& st) { this->_m_maxSearhTimes = st; }
-
+		void setMaxSearchTimes();
 
 		bool target2Grid();
 		bool start2Grid();
@@ -72,6 +72,9 @@ namespace pl {
 
 		pm::Map3D _m_map;
 		pm::GridMap _m_AGridMap;
+
+
+		bool saveMsg(std::string fileName);
 	private:
 
 		bgeo::DPoint3D m_targetPnt3D;

@@ -64,7 +64,10 @@ namespace pm {
 
 	bool Map3D::createMapGraph(){
 		this->map2AGrid();
-		this->grid2Graph();
+		this->grid2AGraph();
+		
+		this->map2SGrid();
+		this->grid2SGraph();
 		return true;
 	}
 
@@ -156,7 +159,7 @@ namespace pm {
 		writeDebug(conf_debug, "obCol", vObCol);
 		writeDebug(conf_debug, "x", vx);
 		writeDebug(conf_debug, "y", vy);
-		writeDebug(conf_debug, "y", vy);
+		writeDebug(conf_debug, "z", vz);
 
 		auto& v_obRing = this->getObstacleRing();
 		conf_debug << "_obRingNum " << v_obRing.size() << endl;
@@ -249,7 +252,7 @@ namespace pm {
 		}
 	}
 
-	void Map3D::grid2Graph(){
+	void Map3D::grid2AGraph(){
 	for (size_t i=0 ; i < this->_m_vCrossAbi.size(); i++)
 	{
 		auto &crossAbi = this->_m_vCrossAbi[i];
@@ -302,6 +305,55 @@ namespace pm {
 		cout << "num_edges = " << num_edges << endl;
 		this->_m_vAllGraph.push_back(_graph);
 	}
+	}
+
+	void Map3D::map2SGrid()
+	{
+		auto bais_x = this->mWsPoint3.x() - this->mWsPoint1.x();
+		auto bais_y = this->mWsPoint3.y() - this->mWsPoint1.y();
+
+		//the max col and the max row
+		this->_m_s_maxRow = ceil(bais_x / this->SgridStep);
+		this->_m_s_maxCol = ceil(bais_y / this->SgridStep);
+
+		//car1
+		for (size_t i = 0; i < _m_s_maxCol; i++)
+		{
+			bgeo::DPoint3D pnt3D;
+			pnt3D.set<Cartesian::X>(this->SgridStep * i + this->mWsPoint1.x() + this->SgridStep / 2);
+			for (size_t j = 0; j < _m_s_maxRow; j++)
+			{
+				pnt3D.set<Cartesian::Y>(this->SgridStep * j + this->mWsPoint1.y() + this->SgridStep / 2);
+				size_t pntType = VertType::WayVert;
+
+				for (auto & it : this->_m_vDRing)
+				{
+					bgeo::DPoint pnt(pnt3D.get<Cartesian::X>(), pnt3D.get<Cartesian::Y>());
+					auto _BWithIn = bg::within(pnt, it);
+					if (_BWithIn)
+					{
+						pntType = VertType::Obstacle;
+						goto insertPnt;
+					}
+				}
+
+			insertPnt:
+				GridIndex pntInd(i, j);
+				double _z = this->getHeight(pnt3D.get<Cartesian::X>(), pnt3D.get<Cartesian::Y>());
+				pnt3D.set<Cartesian::Z>(_z);
+				PointVert3D pntVert3d;
+				pntVert3d._pnt = pnt3D;
+				pntVert3d._type = pntType;
+				pntVert3d._pntInd = GridIndex(i, j);	
+				_m_SGridMap.insert(GridMapUnit(pntVert3d._pntInd, pntVert3d));
+			}
+		}
+
+	}
+
+	void Map3D::grid2SGraph()
+	{
+
 	}
 
 	std::vector<GridIndex> Map3D::getSearchNeighbor(GridIndex const & mindex)

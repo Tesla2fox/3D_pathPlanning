@@ -1,51 +1,44 @@
-# import  instance
-import  numpy as np
-
-import plotly.plotly as py
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 import plotly
-import random
-from numpy import *
-from copy import *
-import copy
-import colorlover as cl
-import plotly.io as pio
-# import read_cfg
-
+import numpy as np
+# import MCMPinstance
+import  colorlover as cl
 
 class Pnt:
     def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
-
     def pnt2dict(self):
         dic = dict(x=x, y=y)
         return dic
-
     def display(self):
         print('x = ', self.x, 'y = ', self.y)
 
+class Rect:
+    def __init__(self, pnt=Pnt(), width=0, height=0):
+        self.x0 = pnt.x
+        self.y0 = pnt.y
+        self.x1 = self.x0 + width
+        self.y1 = self.y0 + height
 
-class Circle:
-    def __init__(self, pnt=Pnt(), rad=0):
-        self.x = pnt.x
-        self.y = pnt.y
-        self.rad = rad
-        self.x0 = self.x - self.rad
-        self.y0 = self.y - self.rad
-        self.x1 = self.x + self.rad
-        self.y1 = self.y + self.rad
-
-    def circle2dict(self):
-        dic = dict()
-        dic['type'] = 'circle'
-        dic['xref'] = 'x'
-        dic['yref'] = 'y'
+    def goShape(self):
+        dic = go.layout.Shape()
+        dic['type'] = 'rect'
         dic['x0'] = self.x0
         dic['y0'] = self.y0
         dic['x1'] = self.x1
         dic['y1'] = self.y1
-        dic['line'] = dict(color='rgba(50, 171, 96, 1)')
+        dic['line'] = dict(color='rgb(128, 0, 128)')
+        return dic
+
+    def rect2dict(self):
+        dic = dict()
+        dic['type'] = 'rect'
+        dic['x0'] = self.x0
+        dic['y0'] = self.y0
+        dic['x1'] = self.x1
+        dic['y1'] = self.y1
+        dic['line'] = dict(color='rgb(128, 0, 128)')
         return dic
 
 
@@ -66,58 +59,18 @@ class Line:
         dic['line'] = dict(color='rgb(128, 0, 128)')
         return dic
 
-
-class Rect:
-    def __init__(self, pnt=Pnt(), width=0, height=0):
-        self.x0 = pnt.x
-        self.y0 = pnt.y
-        self.x1 = self.x0 + width
-        self.y1 = self.y0 + height
-
-    def rect2dict(self):
-        dic = dict()
-        dic['type'] = 'rect'
-        dic['x0'] = self.x0
-        dic['y0'] = self.y0
-        dic['x1'] = self.x1
-        dic['y1'] = self.y1
-        dic['line'] = dict(color='rgb(128, 0, 128)')
-        return dic
-
-
-def getLevelColor(level):
-    strcolor = 'rgba('
-    for i in range(3):
-        strcolor = strcolor + str(level * 50) + ','
-    strcolor = strcolor + str(1 / level) + ')'
-    return strcolor
-
-
-colorLst = ['white', 'black']
-
-
 class Env:
-    def __init__(self, mat=zeros((2, 2))):
-        self.mat = mat
-        self.shapeLst = []
-        self.drawData = []
+    def __init__(self, mat):
+        self._mat = mat
+        self._shapeLst= []
+        self._scatterLst = []
         self.annotations = []
-
-    def addTest(self):
-
-        pathTrace = go.Scatter(x=[5],
-                               y=[5],
-                               mode='lines',
-                               line=dict(shape='spline',
-                                         width=4),
-                               name='Path_' + str(1))
-        self.drawData.append(pathTrace)
 
     def addgrid(self):
         g_color = 'blue'
-        row = len(self.mat)
+        row = len(self._mat)
         for i in range(row):
-            for j in range(len(self.mat[i])):
+            for j in range(len(self._mat[i])):
                 pnt = Pnt(i, j)
                 rect = Rect(pnt, 1, 1)
                 rectDic = rect.rect2dict()
@@ -125,29 +78,60 @@ class Env:
                 rectDic['line']['width'] = 0.5
                 #                rectDic['opacity'] =  1/(int(self.mat[i][j])+1)
                 #                rectDic['fillcolor'] = colorLst[int(self.mat[i][j])]
-                if (int(self.mat[i][j]) == 1):
+                if (int(self._mat[i][j]) == 1):
                     rectDic['fillcolor'] = 'black'
                 #                if(int(self.mat[i][j])==0):
                 #                    rectDic['fillcolor'] = colorLst[int(self.mat[i][j])]
                 #                getLevelColor(mat[i][j])
-                self.shapeLst.append(copy.deepcopy(rectDic))
-        print(len(self.shapeLst))
+
+                self._shapeLst.append(rectDic)
+    def addHGrid(self,h_mat):
+        row = len(self._mat)
+        h_set = set()
+        for i in range(row):
+            for j in range(len(self._mat[i])):
+                h_set.add(h_mat[i][j])
+
+        bupu =  cl.scales[str(len(h_set))]['div']['PRGn']
+
+        h_list  = list(h_set)
+        print(h_list)
+        sorted(h_list)
+
+        g_color = 'blue'
+        row = len(self._mat)
+        for i in range(row):
+            for j in range(len(self._mat[i])):
+                pnt = Pnt(i, j)
+                rect = Rect(pnt, 1, 1)
+                rectDic = rect.rect2dict()
+                rectDic['line']['color'] = g_color
+                rectDic['line']['width'] = 0.5
+                #                rectDic['opacity'] =  1/(int(self.mat[i][j])+1)
+                #                rectDic['fillcolor'] = colorLst[int(self.mat[i][j])]
+                lvl = h_list.index(h_mat[i][j])
+                rectDic['fillcolor'] = bupu[lvl]
+                rectDic['opacity'] = 0.6
+
+                if (int(self._mat[i][j]) == 1):
+                    rectDic['fillcolor'] = 'black'
+                    rectDic['opacity'] = 0.9
+
+                self._shapeLst.append(rectDic)
+
 
     def addRobotStartPnt(self, lst=[]):
-        for i in range(len(lst[0])):
-            lst[0][i] = lst[0][i] + 0.5
-            lst[1][i] = lst[1][i] + 0.5
-            startTrace = go.Scatter(x=[lst[0][i]], y=[lst[1][i]], mode='markers',
+        for robID in range(len(lst)):
+            startTrace = go.Scatter(x=[lst[robID][0]+0.5], y=[lst[robID][1]+0.5], mode='markers',
                                     marker=dict(symbol='cross-dot', size=20),
-                                    name='Robot_' + str(i))
-            self.drawData.append(startTrace)
-
+                                    name='Robot_' + str(robID))
+            self._scatterLst.append(startTrace)
     def addEdges(self, lst=[]):
         mark_x = []
         mark_y = []
-        for p in range(len(lst[0])):
-            pnt0 = Pnt(lst[0][p] + 0.5, lst[1][p] + 0.5)
-            pnt1 = Pnt(lst[2][p] + 0.5, lst[3][p] + 0.5)
+        for p in range(len(lst)):
+            pnt0 = Pnt(lst[p][0] + 0.5, lst[p][1] + 0.5)
+            pnt1 = Pnt(lst[p][2] + 0.5, lst[p][3] + 0.5)
             mark_x.append(pnt0.x)
             mark_x.append(pnt1.x)
             mark_y.append(pnt0.y)
@@ -155,180 +139,152 @@ class Env:
             line = Line(pnt0, pnt1)
             lineDic = line.line2dict()
             #                print(randColor())
-            lineDic['line']['color'] = 'rgba(15,15,15,0.5)'
+            lineDic['line']['color'] = 'darkred'
             lineDic['line']['width'] = 3
-            self.shapeLst.append(copy.deepcopy(lineDic))
+            self._shapeLst.append(lineDic)
+
         markTrace = go.Scatter(mode='markers',
                                x=mark_x,
                                y=mark_y,
                                marker=dict(size=3),
                                name='Spanning-Tree')
-        self.drawData.append(markTrace)
+        self._scatterLst.append(markTrace)
 
-    def addEdgeInPnt(self, lst=[]):
+    def addEdgesInPnt(self,lst = []):
         mark_x = []
         mark_y = []
-        for p in range(len(lst[0])):
-            pnt0 = Pnt(lst[0][p], lst[1][p])
-            pnt1 = Pnt(lst[2][p], lst[3][p])
+        for p in range(len(lst)):
+            pnt0 = Pnt(lst[p][0], lst[p][1])
+            pnt1 = Pnt(lst[p][2], lst[p][3])
             mark_x.append(pnt0.x)
             mark_x.append(pnt1.x)
             mark_y.append(pnt0.y)
             mark_y.append(pnt1.y)
             line = Line(pnt0, pnt1)
             lineDic = line.line2dict()
-            lineDic['line']['color'] = 'red'
-            lineDic['line']['width'] = 5
-            self.shapeLst.append(copy.deepcopy(lineDic))
+            #                print(randColor())
+            lineDic['line']['color'] = 'darkred'
+            # lineDic['line']['color'] = 'rgba(15,15,15,0.5)'
+            lineDic['line']['width'] = 3
+            self._shapeLst.append(lineDic)
+
         markTrace = go.Scatter(mode='markers',
                                x=mark_x,
                                y=mark_y,
-                               marker=dict(size=10),
+                               marker=dict(size=3),
                                name='Spanning-Tree')
-        self.drawData.append(markTrace)
+        self._scatterLst.append(markTrace)
 
-    def addGraph(self, robNum=0, lst=[], txtType=False):
-        g_color = 'blue'
-        bupu = cl.scales[str(robNum)]['seq']['BuPu']
-        print(bupu)
-        for i in range(robNum):
-            for j in range(len(lst[2 * i])):
-                pnt = Pnt(int(lst[2 * i][j]), int(lst[2 * i + 1][j]))
-                rect = Rect(pnt, 1, 1)
-                rectDic = rect.rect2dict()
-                rectDic['line']['color'] = g_color
-                rectDic['line']['width'] = 0.5
-                rectDic['fillcolor'] = bupu[i]
-                rectDic['opacity'] = 0.6
-                if (txtType):
-                    self.annotations.append(dict(showarrow=False,
-                                                 x=pnt.x + 0.5, y=pnt.y + 0.5,
-                                                 text=str(i)))
-                else:
-                    self.annotations.append(dict(showarrow=False,
-                                                 x=pnt.x + 0.5, y=pnt.y + 0.5,
-                                                 text=str(pnt.x) + '-' + str(pnt.y)))
-                self.shapeLst.append(copy.deepcopy(rectDic))
+    def addSinglePathInd(self,pathInd = []):
 
-    def addPath(self, robNum=0, lst=[], txtType=True):
-        for i in range(robNum):
-            x = lst[2 * i]
-            y = lst[2 * i + 1]
-            markTrace = go.Scatter(mode='markers+lines',
-                                   x=x,
-                                   y=y,
-                                   marker=dict(size=10),
-                                   name='Path_' + str(i + 1))
-            #            if(txtType):
-            if (False):
-                for i in range(len(x)):
-                    self.annotations.append(dict(showarrow=False,
-                                                 x=x[i], y=y[i],
-                                                 text=str(i)))
-            self.drawData.append(markTrace)
+        x = [path_unit[0]+0.5 for path_unit in pathInd]
+        y = [path_unit[1]+0.5 for path_unit in pathInd]
 
-    def addSTCGraph(self, robNum=0, lst=[], txtType=False):
-        g_color = 'blue'
-        bupu = cl.scales[str(robNum)]['seq']['BuPu']
-        print(bupu)
-        for i in range(robNum):
-            for j in range(len(lst[2 * i])):
-                pnt = Pnt(int(lst[2 * i][j]) * 2, int(lst[2 * i + 1][j]) * 2)
-                rect = Rect(pnt, 2, 2)
-                rectDic = rect.rect2dict()
-                rectDic['line']['color'] = g_color
-                rectDic['line']['width'] = 1
-                rectDic['fillcolor'] = bupu[i]
-                rectDic['opacity'] = 0.6
-                if (txtType):
-                    self.annotations.append(dict(showarrow=False,
-                                                 x=pnt.x + 1, y=pnt.y + 1,
-                                                 text=str(i)))
-                else:
-                    self.annotations.append(dict(showarrow=False,
-                                                 x=pnt.x + 1, y=pnt.y + 1,
-                                                 text=str(int(lst[2 * i][j])) + '-' +
-                                                      str(int(lst[2 * i + 1][j]))))
+        markTrace = go.Scatter(mode='markers+lines',
+                               x=x,
+                               y=y,
+                               # marker=dict(size=10),
+                               name='Path_single' )
+        self._scatterLst.append(markTrace)
+    def addSinglePathInPnt(self,pathInd = []):
 
-                self.shapeLst.append(copy.deepcopy(rectDic))
+        x = [path_unit[0] for path_unit in pathInd]
+        y = [path_unit[1] for path_unit in pathInd]
+        print(x)
+        print(y)
+        markTrace = go.Scatter(mode='markers+lines',
+                               x=x,
+                               y=y,
+                               # color="species",
+                               # color = 'darkred',
+                               # marker=dict(size=10),
+                               line=dict(width=3,color ='darkred'),
+                               name='Path_single' )
+        self._scatterLst.append(markTrace)
 
-    def addNeiGraph(self, robNum=0, lst=[]):
-        g_color = 'blue'
-        bupu = cl.scales[str(robNum)]['seq']['BuPu']
-        print(bupu)
-        for i in range(robNum):
-            for j in range(len(lst[2 * i])):
-                pnt = Pnt(int(lst[2 * i][j]), int(lst[2 * i + 1][j]))
-                rect = Rect(pnt, 1, 1)
-                rectDic = rect.rect2dict()
-                rectDic['line']['color'] = g_color
-                rectDic['line']['width'] = 0.5
-                rectDic['fillcolor'] = bupu[i]
-                rectDic['opacity'] = 1
-                self.shapeLst.append(copy.deepcopy(rectDic))
-
-    def drawPic(self, name='env', fileType=True):
+    def drawPic(self, name='env', showBoolean = True,saveBoolean = False,):
         layout = dict()
-        layout['shapes'] = self.shapeLst
-        layout['xaxis'] = {'range': [0, len(self.mat[0])]}
-        layout['yaxis'] = {'range': [0, len(self.mat)]}
+        layout['shapes'] = self._shapeLst
+        # layout['xaxis'] = dict(showgrid=False)
+
         layout['xaxis'] = dict(
             autorange=True,
             showgrid=False,
             zeroline=False,
             showline=False,
-            autotick=True,
+            # autotick=True,
             ticks='',
             showticklabels=False)
+
         layout['yaxis'] = dict(
             scaleanchor="x",
             autorange=True,
             showgrid=False,
             zeroline=False,
             showline=False,
-            autotick=True,
+            # autotick=True,
             ticks='',
             showticklabels=False)
-        # layout['font'] = dict(
-        #     # family='sans-serif',
-        #     sie=25
-        #     # color='#000'
-        # )
+        layout['xaxis']['range'] = [0, len(self._mat[0])]
+        layout['yaxis']['range'] = [0, len(self._mat)]
+
+        layout['font'] = dict(
+            family='sans-serif',
+            size=25,
+            color='#000'
+        )
         layout['autosize'] = False
         layout['height'] = 1000
         layout['width'] = 1000
-        layout['annotations'] = self.annotations
+        layout['template'] = "plotly_white"
+        # layout['annotations'] = self.annotations
         #        print(layout)
-        fig = dict(data=self.drawData, layout=layout)
-        if (fileType):
-            plotly.offline.plot(fig, filename=name + '.html', validate=False)
-        else:
-            # pio.write_image(fig,name+'.pdf')
-            py.image.save_as(fig, filename=name + '.jpeg')
+        fig = go.Figure(data = self._scatterLst, layout = layout)
 
-# def drawPath(ins : instance.MCMPInstance, path = []):
-#     print('sss')
+        if showBoolean:
+            fig.show()
+        if saveBoolean:
+            fig.write_image('fig.pdf')
+
+
+# def drawPic(ins: MCMPinstance.MCMPInstance, singlePathInd = None, edgeLst = None):
 #     env = Env(ins._mat)
 #     env.addgrid()
-#     robLst = []
-#     robRowLst = [x[0] for x in ins._robPosLst]
-#     robColLst = [x[1] for x in ins._robPosLst]
-#     robLst.append(robRowLst)
-#     robLst.append(robColLst)
-#     env.addRobotStartPnt(robLst)
-#     robNum = ins._robNum
-#
-#     # path = []
-#     if path == []:
-#         pass
+#     env.addRobotStartPnt(ins._robPosLst)
+#     if singlePathInd != None:
+#         env.addSinglePathInd(singlePathInd)
+#         # pass
+#     if edgeLst != None:
+#         # raise Exception('xxx')
+#         env.addEdges(edgeLst)
 #     else:
-#         env.addPath(robNum,path)
-#     env.drawPic('test')
-#     pass
+#         pass
+#         # raise  Exception('ssss')
+#     env.drawPic(name = 'pic')
+
+# def drawSTCPic(ins:MCMPinstance.MCMPInstance, edgePntLst = None):
+#     env = Env(ins._mat)
+#     env.addgrid()
+#     env.addEdgesInPnt(edgePntLst)
+#     env.drawPic(name = 'pic')
+#     raise Exception('xx')
+
+def drawHeightPic(mat,h_mat = [],pathLst = []):
+    env = Env(mat)
+    if h_mat == []:
+        env.addgrid()
+    else:
+        env.addHGrid(h_mat)
+    env.addSinglePathInPnt(pathLst)
+    env.drawPic()
+
+
+
 
 if __name__ == '__main__':
-    row = 20
-    col = 20
+
+    row = 40
+    col = 40
     robNum = 2
     p = np.array([0.9,0.1])
     np.random.seed(1000)
@@ -341,12 +297,28 @@ if __name__ == '__main__':
     # 0 means way
     print(robPosLst)
     obstacleLst = []
-    # for rowInd in range(row):
-    #     for colInd in range(col):
-    #         if (rowInd,colInd) in robPosLst:
-    #             obstacleLst.append(0)
-    #         else:
-    #             obstacleLst.append(np.random.choice([0,1],p =p.ravel()))
-    # ins =    instance.MCMPInstance(row,col,obstacleLst,robPosLst)
-    #
-    # drawPath(ins)
+    for rowInd in range(row):
+        for colInd in range(col):
+            if (rowInd,colInd) in robPosLst:
+                obstacleLst.append(0)
+            else:
+                obstacleLst.append(np.random.choice([0,1],p =p.ravel()))
+    _row = row
+    _col = col
+    _obstacleLst = obstacleLst
+    _robNum = len(robPosLst)
+    _mat = np.zeros([_row, _col])
+    # print(self._mat)
+    ind = 0
+    for rowInd in range(row):
+        for colInd in range(col):
+            _mat[rowInd][colInd] = _obstacleLst[ind]
+            ind = ind + 1
+
+    env = Env(_mat)
+    env.addgrid()
+    env.addRobotStartPnt(robPosLst)
+    env.drawPic(showBoolean= True, saveBoolean= False)
+    print('ss')
+
+

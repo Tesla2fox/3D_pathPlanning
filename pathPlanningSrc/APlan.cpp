@@ -1,5 +1,5 @@
 ﻿#include "APlan.h"
-
+#include "Gwrite.hpp"
 
 
 namespace pl {
@@ -27,6 +27,7 @@ namespace pl {
 		this->_pntInd = ind;
 		this->_parentInd = par;
 		this->disH = boost::geometry::distance(pnt, _target);
+		//cout << " disH = " << this->disH << endl;;
 		this->disF = this->disG + this->disH;
 	}
 
@@ -38,7 +39,7 @@ namespace pl {
 
 	APlan::APlan()
 	{
-
+		cout << "construct aplan" << endl;
 	}
 
 	APlan::~APlan()
@@ -77,6 +78,7 @@ namespace pl {
 	{
 		setStartPnt(s_x, s_y);
 		setTargetPnt(t_x, t_y);
+		//return false;
 		if (target2Grid() && start2Grid())
 		{
 			this->setStartPnt(this->_m_AGridMap[this->m_Sindex]._pnt.get<Cartesian::X>(),
@@ -94,13 +96,19 @@ namespace pl {
 	bool APlan::loadMap(pm::Map3D& _map)
 	{
 		this->_m_map = _map;
-		_m_AGridMap = _map.getGridMap();
+		_m_AGridMap = _map.getAGridMap();
 
 		this->gridSize = _map.getGridSize(MapType::AggregationMap);
 		this->_m_crossAbi = _map.getCrossAbi(this->_m_agentType);
 
 		this->setMaxSearchTimes(this->gridSize);
 		return false;
+	}
+
+	void APlan::setMaxSearchTimes()
+	{
+		this->_m_maxSearhTimes = size_t(this->_m_map.getAGridMap().size() *0.8);
+		cout << " gridSize = " << this->_m_map.getAGridMap().size() << endl;
 	}
 
 	bool APlan::target2Grid()
@@ -110,6 +118,7 @@ namespace pl {
 			//Target is in the obstacle
 		{
 			this->failIndex = -2;
+			cout << "<CPlan> the target is out of scope" << endl;
 			return false;
 		}
 		else
@@ -117,7 +126,10 @@ namespace pl {
 			if (_m_AGridMap[m_Tindex]._type == pm::VertType::WayVert)
 				return true;
 			else
+			{
+				cout << "<CPlan> the target is obstacle" << endl;
 				return false;
+			}
 		}
 	}
 	bool APlan::start2Grid()
@@ -127,6 +139,7 @@ namespace pl {
 			//Target is in the obstacle
 		{
 			this->failIndex = -2;
+			cout << "<CPlan> the startPos is out of scope" << endl;
 			return false;
 		}
 		else
@@ -134,7 +147,10 @@ namespace pl {
 			if (_m_AGridMap[m_Sindex]._type == pm::VertType::WayVert)
 				return true;
 			else
+			{
+				cout << "<CPlan> the startPos is obstacle" << endl;
 				return false;
+			}
 		}
 	}
 
@@ -149,6 +165,8 @@ namespace pl {
 		//此处验证没有必要
 		if ((target2Grid()) && (start2Grid()))
 		{
+
+#ifdef _DEBUG
 			std::cout << "spnt.x = " << this->m_startPnt.x() << "	spnt.y = " << this->m_startPnt.y() << endl;
 			std::cout << "sgrid.x = " << this->_m_AGridMap[m_Sindex]._pnt.get<Cartesian::X>() <<
 				" sgrid.y = " << this->_m_AGridMap[m_Sindex]._pnt.get<Cartesian::Y>() << endl;
@@ -156,6 +174,9 @@ namespace pl {
 			std::cout << "tpnt.x = " << this->m_targetPnt.x() << "	tpnt.y = " << this->m_targetPnt.y() << endl;
 			std::cout << "tgrid.x = " << this->_m_AGridMap[m_Tindex]._pnt.get<Cartesian::X>() <<
 				" tgrid.y = " << this->_m_AGridMap[m_Tindex]._pnt.get<Cartesian::Y>() << endl;
+#endif // DEBUG
+
+			//if this->m_Sindex.first == this->m_Tindex.first && this->m_Sindex.second ==  
 
 			clock_t aSearch_startTime, aSearch_endTime;
 			aSearch_startTime = clock();
@@ -187,6 +208,20 @@ namespace pl {
 
 		return false;
 	}
+	bool APlan::saveMsg(std::string fileName)
+	{
+		std::ofstream conf_debug(fileName, std::ios::trunc);
+		conf_debug.precision(12);
+		vector<double> vx, vy;
+		for (auto & it : this->m_path2D)
+		{
+			vx.push_back(it.x());
+			vy.push_back(it.y());
+		}
+		writeDebug(conf_debug, "x", vx);
+		writeDebug(conf_debug, "y", vy);		
+		return false;
+	}
 	bool APlan::AstarSearch()
 	{
 		auto& grid = this->_m_AGridMap;
@@ -197,9 +232,18 @@ namespace pl {
 		m_openList.push_back(sNode);
 
 		size_t searchTimes = 0;
+		//cout << "_m_maxSearchTimes = " << this->_m_maxSearhTimes << endl;
+
+		bool already_find = false;
+		double extra_search_ratio = 0.3;
+		size_t extra_search = 0;
+		size_t extra_counter = 0;
 
 		while (!m_openList.empty())
 		{
+
+
+
 			std::vector<size_t> vdirIndex;
 			auto aIndex = m_openList.front()._pntInd;
 			auto preDir = m_openList.front()._dir;
@@ -211,6 +255,18 @@ namespace pl {
 			m_openSet.remove(aIndex);
 			m_openList.pop_front();
 
+			if ((aIndex.first == this->m_Tindex.first) && (aIndex.second == this->m_Tindex.second))
+			{
+				already_find = true;
+				extra_search = (size_t)(searchTimes * extra_search_ratio);
+			}
+			if (already_find) {
+				extra_counter++;
+				if (extra_counter >= extra_search)
+				{
+					break;
+				}
+			}
 
 			auto vIndex = getNeighbor(aIndex, vdirIndex);
 
@@ -257,15 +313,21 @@ namespace pl {
 					}
 				}
 			}
-
+#ifdef DEBUG
+			cout << "searchTimes = " << searchTimes << endl;
+			cout << "_m_maxSearhTimes = " << _m_maxSearhTimes << endl;
+#endif // DEBUG
 			searchTimes++;
+
 			if (searchTimes > this->_m_maxSearhTimes)
 			{
+				cout << "searchTimes = " << searchTimes << endl;
 				//qDebug()<<"over the maxSearchTimes";
 				std::cout << "over the maxmaxSearchTimes" << std::endl;
 				goto Fcase;
 			}
 		}
+		return true;
 	Fcase:
 		return false;
 	}
@@ -315,16 +377,20 @@ namespace pl {
 		//m_path.push_back(m_startPnt);
 		//std::list<bgeo::DPoint> l_path;		
 		//m_path.push_back(m_startPnt);
-		
+		m_path3D.push_back(this->m_startPnt3D);
+		m_path3D.push_back(this->_m_AGridMap[this->m_Sindex]._pnt);
+
 		for (size_t i = 1; i < (vdirIndex.size() - 1); i++)
 		{
 			if (vdirIndex.at(i) != vdirIndex.at(i + 1))
 				m_path3D.push_back(vpathTem.at(i));
 		}
 		m_path3D.push_back(vpathTem.back());
+		m_path3D.push_back(this->m_targetPnt3D);
+		this->m_path2D.push_back(this->m_startPnt);
 		for (auto& it : this->m_path3D)
 			this->m_path2D.push_back(bgeo::DPoint(it.get<Cartesian::X>(), it.get<Cartesian::Y>()));
-		
+		this->m_path2D.push_back(this->m_targetPnt);
 		return true;
 	}
 
