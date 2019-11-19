@@ -69,7 +69,7 @@ namespace pl {
 
 		bool startPnt2Grid();
 		GridIndex findInitGridIndex();
-		pl::APlan _m_aplan;
+		//pl::APlan _m_aplan;
 
 		bool insidePnt(bgeo::DPoint const &pnt);
 	};

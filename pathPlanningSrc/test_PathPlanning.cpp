@@ -87,12 +87,18 @@ int main()
 	aplanCfg.get("_robType", _robType);
 
 
+	std::clock_t p_startTime, p_endTime;
 
-	pl::APlan a_plan;
+	pl::APlan a_plan(mainMap);
+	p_startTime = clock();
 	a_plan.setAgentType(_robType);
-	a_plan.loadMap(mainMap);
+	//a_plan.loadMap(mainMap);
+	p_endTime = clock();
 	a_plan.setStartAndTargetPnt(_start_x, _start_y, _target_x, _target_y);
 	a_plan.setMaxSearchTimes();
+	cout << "cPlan the prepare planning Time is  " << (double)(p_endTime - p_startTime) / CLOCKS_PER_SEC << "s" << endl;
+
+
 	std::clock_t a_startTime, a_endTime;
 	a_startTime = clock();
 	a_plan.AstarPlan();
@@ -110,8 +116,7 @@ int main()
 	*/
 
 	cout << "begin the s_plan" << endl;
-	pl::SPlan s_plan;
-
+	/*pl::SPlan s_plan;
 	s_plan.setPosition(20, 20);
 	s_plan.setAgentType(0);
 	s_plan.loadMap(mainMap);
@@ -122,7 +127,7 @@ int main()
 	ring.push_back(bgeo::DPoint(0, 100));
 	ring.push_back(bgeo::DPoint(0, 0));	
 	s_plan.setRange(ring);
-	s_plan.plan();
+	s_plan.plan();*/
 	
 	size_t i_x;
 	std::cin >> i_x;

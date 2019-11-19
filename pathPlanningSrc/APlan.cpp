@@ -37,10 +37,18 @@ namespace pl {
 	}
 
 
-	APlan::APlan()
-	{
-		cout << "construct aplan" << endl;
-	}
+	//APlan::APlan()
+	//{
+	//	cout << "construct aplan" << endl;
+	//}
+
+	//APlan::APlan(pm::Map3D & _map):
+	//{
+	//	this->_m_map = _map;
+	//	_m_AGridMap = _map.getAGridMap();
+	//	this->gridSize = _map.getGridSize(MapType::AggregationMap);
+	//	this->_m_crossAbi = _map.getCrossAbi(this->_m_agentType);
+	//}
 
 	APlan::~APlan()
 	{
@@ -93,17 +101,22 @@ namespace pl {
 			return false;
 	}
 
+	void APlan::initPlan()
+	{
+		this->gridSize = this->_m_map.getGridSize(MapType::AggregationMap);
+		this->_m_crossAbi = this->_m_map.getCrossAbi(this->_m_agentType);
+	}
+
 	bool APlan::loadMap(pm::Map3D& _map)
 	{
 		this->_m_map = _map;
 		_m_AGridMap = _map.getAGridMap();
-
 		this->gridSize = _map.getGridSize(MapType::AggregationMap);
 		this->_m_crossAbi = _map.getCrossAbi(this->_m_agentType);
-
-		this->setMaxSearchTimes(this->gridSize);
+		//this->setMaxSearchTimes(this->gridSize);
 		return false;
 	}
+
 
 	void APlan::setMaxSearchTimes()
 	{
@@ -166,15 +179,15 @@ namespace pl {
 		if ((target2Grid()) && (start2Grid()))
 		{
 
-#ifdef _DEBUG
-			std::cout << "spnt.x = " << this->m_startPnt.x() << "	spnt.y = " << this->m_startPnt.y() << endl;
-			std::cout << "sgrid.x = " << this->_m_AGridMap[m_Sindex]._pnt.get<Cartesian::X>() <<
-				" sgrid.y = " << this->_m_AGridMap[m_Sindex]._pnt.get<Cartesian::Y>() << endl;
+//#ifdef _DEBUG
+			//std::cout << "spnt.x = " << this->m_startPnt.x() << "	spnt.y = " << this->m_startPnt.y() << endl;
+			//std::cout << "sgrid.x = " << this->_m_AGridMap[m_Sindex]._pnt.get<Cartesian::X>() <<
+			//	" sgrid.y = " << this->_m_AGridMap[m_Sindex]._pnt.get<Cartesian::Y>() << endl;
 
-			std::cout << "tpnt.x = " << this->m_targetPnt.x() << "	tpnt.y = " << this->m_targetPnt.y() << endl;
-			std::cout << "tgrid.x = " << this->_m_AGridMap[m_Tindex]._pnt.get<Cartesian::X>() <<
-				" tgrid.y = " << this->_m_AGridMap[m_Tindex]._pnt.get<Cartesian::Y>() << endl;
-#endif // DEBUG
+			//std::cout << "tpnt.x = " << this->m_targetPnt.x() << "	tpnt.y = " << this->m_targetPnt.y() << endl;
+			//std::cout << "tgrid.x = " << this->_m_AGridMap[m_Tindex]._pnt.get<Cartesian::X>() <<
+			//	" tgrid.y = " << this->_m_AGridMap[m_Tindex]._pnt.get<Cartesian::Y>() << endl;
+//#endif // DEBUG
 
 			//if this->m_Sindex.first == this->m_Tindex.first && this->m_Sindex.second ==  
 
@@ -313,12 +326,9 @@ namespace pl {
 					}
 				}
 			}
-#ifdef DEBUG
-			cout << "searchTimes = " << searchTimes << endl;
-			cout << "_m_maxSearhTimes = " << _m_maxSearhTimes << endl;
-#endif // DEBUG
+//			cout << "searchTimes = " << searchTimes << endl;
+//			cout << "_m_maxSearhTimes = " << _m_maxSearhTimes << endl;
 			searchTimes++;
-
 			if (searchTimes > this->_m_maxSearhTimes)
 			{
 				cout << "searchTimes = " << searchTimes << endl;

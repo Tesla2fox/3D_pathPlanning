@@ -88,7 +88,6 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_setRobAbi
 	conf_debug.precision(12);
 
 
-
 	if (DebugBoolean)
 	{
 		conf_debug << "_vRobCrossAbi ";
@@ -138,30 +137,38 @@ JNIEXPORT jint JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_setRobAbi
 JNIEXPORT jdoubleArray JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_MotionPlanning
 (JNIEnv* env, jclass, jdouble start_x, jdouble start_y, jdouble target_x, jdouble target_y, jint robType)
 {
+	std::clock_t p_startTime, p_endTime;
+	p_startTime = clock();
+
+	std::clock_t startTime, endTime;
 
 	std::ofstream conf_debug("xx_plan_debug.txt", std::ios::trunc);
 	conf_debug.precision(12);
 
-	std::clock_t startTime, endTime;
 	int _robType = robType;
 	double _start_x = start_x;
 	double _start_y = start_y;
 	double _target_x = target_x;
-	double _target_y = target_y;
-	pl::APlan aplan;
+	double _target_y = target_y;	
+	//aplan.AstarPlan();
+	p_endTime = clock();
+	cout << "cPlan the prepare planning Time is  " << (double)(p_endTime - p_startTime) / CLOCKS_PER_SEC << "s" << endl;	
+
 	startTime = clock();
+	pl::APlan aplan(pm::ex_mainMap);
 	aplan.setAgentType(robType);
-	aplan.loadMap(pm::ex_mainMap);
+	aplan.initPlan();
+	//aplan.loadMap(pm::ex_mainMap);
 	aplan.setStartAndTargetPnt(_start_x, _start_y, _target_x, _target_y);
-
-
+	//aplan.setMaxSearchTimes(36000);
+	aplan.setMaxSearchTimes();
+	endTime = clock();
 	std::clock_t a_startTime, a_endTime;
 	a_startTime = clock();
 	aplan.AstarPlan();
 	a_endTime = clock();
 	cout << "cPlan the planning Time is  " << (double)(a_endTime - a_startTime) / CLOCKS_PER_SEC << "s" << endl;
-
-	if (DebugBoolean)
+	if (false)
 	{
 		conf_debug << "_start_x " << _start_x << endl;
 		conf_debug << " _start_y " << _start_y << endl;
@@ -171,15 +178,9 @@ JNIEXPORT jdoubleArray JNICALL Java_cpp3DPathPlanning_Cpp_13DPathPlanning_Motion
 		conf_debug << " cPlan Planning Time is " << (double)(a_endTime - a_startTime) / CLOCKS_PER_SEC << endl;
 		conf_debug.close();
 	}
+	auto &_path = aplan.get2DPath();
 
-
-
-	auto _path = aplan.get2DPath();
-
-	endTime = clock();
-
-	cout << "cPlan total Time " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
-
+	cout << "cPlan predict total Time " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
 	jdoubleArray output = env->NewDoubleArray(_path.size() * 2 + 1);
 	jboolean isCopy2 = JNI_FALSE;
 	jdouble* destArrayElems = env->GetDoubleArrayElements(output, &isCopy2);

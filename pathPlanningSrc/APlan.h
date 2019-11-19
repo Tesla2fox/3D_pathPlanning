@@ -42,7 +42,9 @@ namespace pl {
 	{
 
 	public:
-		APlan();
+		APlan(pm::Map3D& _map):
+			_m_map(_map),_m_AGridMap(_map.getAGridMap())
+		{}
 		~APlan();
 
 		bool setStartPnt(double const& x, double const& y);
@@ -54,7 +56,8 @@ namespace pl {
 		bool setStartAndTargetPnt(double const& s_x, double const& s_y, double const& t_x, double const& t_y);
 
 		void setAgentType(size_t const& _type) { _m_agentType = _type; }
-
+		
+		void initPlan();
 
 		bool loadMap(pm::Map3D& _map);
 
@@ -70,8 +73,8 @@ namespace pl {
 		vector<bgeo::DPoint3D> get3DPath() const { return this->m_path3D; }
 		vector<bgeo::DPoint> get2DPath() const { return this->m_path2D; }
 
-		pm::Map3D _m_map;
-		pm::GridMap _m_AGridMap;
+		pm::Map3D &_m_map;
+		pm::GridMap &_m_AGridMap;
 
 
 		bool saveMsg(std::string fileName);

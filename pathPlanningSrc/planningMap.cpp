@@ -63,9 +63,11 @@ namespace pm {
 	}
 
 	bool Map3D::createMapGraph(){
+		cout << " begin to create the map graph" << endl;
 		this->map2AGrid();
+		cout << "map2AGrid success" << endl;
 		this->grid2AGraph();
-		
+		cout << "map2AGraph success" << endl;		
 		this->map2SGrid();
 		this->grid2SGraph();
 		return true;
@@ -211,7 +213,7 @@ namespace pm {
 	{
 		auto bais_x = this->mWsPoint3.x() - this->mWsPoint1.x();
 		auto bais_y = this->mWsPoint3.y() - this->mWsPoint1.y();
-
+			
 		//the max col and the max row
 		this->_m_a_maxRow = ceil(bais_x / this->AgridStep);
 		this->_m_a_maxCol = ceil(bais_y / this->AgridStep);
@@ -236,16 +238,14 @@ namespace pm {
 						goto insertPnt;
 					}
 				}
-
-
 			insertPnt:
-
+				//cout << " i = " << i << " j = " << j << endl;
 				GridIndex pntInd(i, j);
 				double _z = this->getHeight(pnt3D.get<Cartesian::X>(), pnt3D.get<Cartesian::Y>());
 				pnt3D.set<Cartesian::Z>(_z);
 				PointVert3D pntVert3d;
-				pntVert3d._pnt = pnt3D;
 				pntVert3d._type = pntType;
+				pntVert3d._pnt = pnt3D;
 				pntVert3d._pntInd = GridIndex(i, j);
 				_m_AGridMap.insert(GridMapUnit(pntVert3d._pntInd, pntVert3d));				
 			}

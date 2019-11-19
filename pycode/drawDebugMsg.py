@@ -66,7 +66,6 @@ if __name__ == '__main__':
     # drawHeightPic(mat,h_mat =[] ,pathLst = pos_list)
     drawHeightPic(mat,h_mat = h_mat ,pathLst = pos_list)
 
-
     # print(mat)
     # env = drawEnv.Env(mat)
     # env.addgrid()
